@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Playground — Snake & Minesweeper</title>
+<title>Playground — Games Hub</title>
 <style>
   :root{--bg:#0f1220;--panel:#14182b;--ink:#e6e8ef;--muted:#94a3b8;--line:#28314f;--accent:#66d9a3;--danger:#ff5d73}
   *{box-sizing:border-box}html,body{height:100%}
@@ -11,7 +11,7 @@
   .wrap{width:min(96vw,720px);text-align:center}
   h1{font-size:24px;margin-bottom:24px}
   .games{display:grid;gap:20px;justify-content:center;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;place-items:center;transition:transform .15s ease, border-color .15s ease;text-decoration:none;color:var(--ink)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;place-items:center;transition:transform .15s ease,border-color .15s ease;text-decoration:none;color:var(--ink)}
   .card:hover{transform:translateY(-3px);border-color:var(--accent)}
   .card h2{margin:0 0 10px 0;font-size:18px}
   .card p{color:var(--muted);font-size:14px;margin:0}
@@ -28,6 +28,10 @@
       <a class="card" href="minesweeper.html">
         <h2>Minesweeper</h2>
         <p>Clear the board without hitting mines.</p>
+      </a>
+      <a class="card" href="blackjack.html">
+        <h2>Blackjack</h2>
+        <p>Beat the dealer using 6 decks. Includes split and double down.</p>
       </a>
     </div>
   </div>
