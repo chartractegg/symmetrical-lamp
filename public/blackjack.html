@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Blackjack — 6‑Deck Shoe (with Split)</title>
+<style>
+  :root{--bg:#0f1220;--felt:#0e3b2e;--panel:#14182b;--ink:#e6e8ef;--muted:#8fa6b6;--line:#28314f;--accent:#66d9a3;--warn:#ffd166;--err:#ff5d73}
+  *{box-sizing:border-box}html,body{height:100%}
+  body{margin:0;display:grid;place-items:center;background:radial-gradient(1100px 600px at 10% 0%,#171a39 0%,#0f1220 60%);color:var(--ink);font:15px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  .wrap{width:min(96vw,900px)}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}h1{font-size:18px;margin:0}.stats{display:flex;gap:8px;flex-wrap:wrap}.badge{background:var(--panel);border:1px solid var(--line);padding:6px 10px;border-radius:999px;color:var(--muted)}.bold{color:var(--ink);font-weight:700}.table{background:linear-gradient(#0f5b46,#0e3b2e);border:1px solid #0a2a22;border-radius:16px;padding:16px;box-shadow:0 12px 35px rgba(0,0,0,.35) inset}.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.bank{display:flex;gap:12px;align-items:center}button,input[type=number]{background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:8px 10px;border-radius:10px}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}.actions{display:flex;gap:8px;flex-wrap:wrap}.hands{display:grid;gap:16px;margin-top:12px}.hand{background:rgba(0,0,0,.2);border:1px solid #0b2320;border-radius:12px;padding:12px}.title{display:flex;align-items:center;gap:8px;margin-bottom:8px}.cards{display:flex;gap:8px;flex-wrap:wrap}.card{width:64px;height:88px;border-radius:10px;border:1px solid #b9c1c9;background:#fff;display:grid;place-items:center;font-weight:800;font-size:20px}.card.red{color:#c1121f}.card.back{background:repeating-linear-gradient(45deg,#162042 0 8px,#0e1537 8px 16px);border-color:#2b335f}.msg{margin-top:10px;color:#f1f5f9}.toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#11152a;color:#c5c9e6;border:1px solid #2b3157;padding:8px 12px;border-radius:10px;opacity:0;transition:opacity .2s ease;pointer-events:none}.toast.show{opacity:1}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Blackjack — 6‑Deck (with Split)</h1>
+      <div class="stats">
+        <span class="badge">Bankroll: $<span id="bank" class="bold">1000</span></span>
+        <span class="badge">Bet: $<span id="betDisp" class="bold">10</span></span>
+        <span class="badge">Shoe: <span id="shoeLeft" class="bold">0</span> cards</span>
+      </div>
+    </header>
+
+    <div class="table">
+      <div class="row" style="justify-content:space-between">
+        <div class="bank">
+          <label class="badge" for="bet">Bet</label>
+          <input id="bet" type="number" min="1" step="1" value="10" style="width:90px"/>
+          <button id="deal">Deal</button>
+          <button id="newShoe">New Shoe</button>
+        </div>
+        <div class="actions">
+          <button id="hit" disabled>Hit</button>
+          <button id="stand" disabled>Stand</button>
+          <button id="double" disabled>Double</button>
+          <button id="split" disabled>Split</button>
+          <button id="surrender" disabled>Surrender</button>
+        </div>
+      </div>
+
+      <div class="hands" id="hands"></div>
+      <div id="msg" class="msg"></div>
+    </div>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+<script>
+(()=>{
+  const SUITS=['♠','♥','♦','♣'],RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  const DECKS=6,CUT=0.75;
+  let shoe=[];let bankroll=1000;let bet=10;let playerHands=[];let dealer=[];let activeHand=0;let inRound=false;let firstAction=true;let holeDown=true;
+
+  const handsEl=document.getElementById('hands'),msgEl=document.getElementById('msg'),bankEl=document.getElementById('bank'),betDisp=document.getElementById('betDisp'),shoeLeftEl=document.getElementById('shoeLeft'),toastEl=document.getElementById('toast');
+  const dealBtn=document.getElementById('deal'),newShoeBtn=document.getElementById('newShoe'),hitBtn=document.getElementById('hit'),standBtn=document.getElementById('stand'),doubleBtn=document.getElementById('double'),splitBtn=document.getElementById('split'),surrenderBtn=document.getElementById('surrender'),betInput=document.getElementById('bet');
+
+  function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+  function freshShoe(){shoe=[];for(let d=0;d<DECKS;d++){for(const s of SUITS){for(const r of RANKS){shoe.push({rank:r,suit:s});}}}shuffle(shoe);updateShoe();}
+  function draw(){if(!shoe.length)freshShoe();const c=shoe.pop();updateShoe();return c;}
+  function updateShoe(){shoeLeftEl.textContent=shoe.length;}
+  function cardValue(r){if(r==='A')return 11;if(['K','Q','J','10'].includes(r))return 10;return parseInt(r,10);}
+  function handValue(h){let t=0,a=0;for(const c of h){t+=cardValue(c.rank);if(c.rank==='A')a++;}while(t>21&&a>0){t-=10;a--;}return{total:t,soft:a>0&&t<=21};}
+  function showToast(msg){toastEl.textContent=msg;toastEl.classList.add('show');clearTimeout(showToast._t);showToast._t=setTimeout(()=>toastEl.classList.remove('show'),1200);}
+  function cardNode(c){const el=document.createElement('div');el.className='card'+((c.suit==='♥'||c.suit==='♦')?' red':'');el.textContent=c.rank+c.suit;return el;}
+  function backNode(){const el=document.createElement('div');el.className='card back';return el;}
+
+  function render(){handsEl.innerHTML='';const dealerBox=document.createElement('div');dealerBox.className='hand';const dTitle=document.createElement('div');dTitle.className='title';dTitle.innerHTML='<strong>Dealer</strong>';dealerBox.appendChild(dTitle);const dCards=document.createElement('div');dCards.className='cards';
+    dealerBox.appendChild(dCards);handsEl.appendChild(dealerBox);
+    if(dealer.length){dCards.appendChild(cardNode(dealer[0]));holeDown?dCards.appendChild(backNode()):dealer.slice(1).forEach(c=>dCards.appendChild(cardNode(c)));}
+    playerHands.forEach((hand,i)=>{const box=document.createElement('div');box.className='hand';if(i===activeHand)box.style.outline='2px solid var(--accent)';const title=document.createElement('div');title.className='title';title.innerHTML='<strong>Hand '+(i+1)+'</strong> <span class="badge">'+handValue(hand.cards).total+'</span>';const cards=document.createElement('div');cards.className='cards';hand.cards.forEach(c=>cards.appendChild(cardNode(c)));box.appendChild(title);box.appendChild(cards);handsEl.appendChild(box);});
+    bankEl.textContent=bankroll;betDisp.textContent=bet;}
+
+  function setButtons(stage){const s=(b,on)=>b.disabled=!on;if(stage==='idle'){[hitBtn,standBtn,doubleBtn,splitBtn,surrenderBtn].forEach(b=>s(b,false));s(dealBtn,true);}else if(stage==='acting'){s(hitBtn,true);s(standBtn,true);s(doubleBtn,firstAction&&bankroll>=bet);s(splitBtn,canSplit());s(surrenderBtn,firstAction);s(dealBtn,false);}else if(stage==='locked'){[hitBtn,standBtn,doubleBtn,splitBtn,surrenderBtn].forEach(b=>s(b,false));s(dealBtn,true);}}
+
+  function canSplit(){const h=playerHands[activeHand];if(!firstAction||h.cards.length!==2||bankroll<bet)return false;return cardValue(h.cards[0].rank)===cardValue(h.cards[1].rank);}
+
+  function startRound(){bet=Math.max(1,Number(betInput.value)||10);if(bet>bankroll){showToast('Bet exceeds bankroll');return;}bankroll-=bet;playerHands=[{cards:[draw(),draw()],bet}];dealer=[draw(),draw()];holeDown=true;inRound=true;firstAction=true;activeHand=0;render();setButtons('acting');msgEl.textContent='';}
+
+  function hit(){const h=playerHands[activeHand];h.cards.push(draw());firstAction=false;render();if(handValue(h.cards).total>21)nextHand();}
+  function stand(){nextHand();}
+  function double(){const h=playerHands[activeHand];if(bankroll<bet)return;bankroll-=bet;h.bet*=2;h.cards.push(draw());render();nextHand();}
+  function split(){const h=playerHands[activeHand];if(!canSplit())return;bankroll-=bet;const c1=h.cards[0],c2=h.cards[1];playerHands.splice(activeHand,1,{cards:[c1,draw()],bet},{cards:[c2,draw()],bet});render();}
+  function surrender(){bankroll+=Math.floor(bet/2);inRound=false;setButtons('idle');msgEl.textContent='Surrendered';render();}
+
+  function nextHand(){activeHand++;firstAction=true;if(activeHand>=playerHands.length)finishRound();else render();}
+  function finishRound(){holeDown=false;let dV=handValue(dealer);while(dV.total<17)dV=handValue(dealer.push(draw()),dealer);
+    playerHands.forEach(h=>{const pV=handValue(h.cards).total,dT=dV.total;let out='lose';if(pV>21)out='lose';else if(dT>21||pV>dT)out='win';else if(pV<dT)out='lose';else out='push';if(out==='win')bankroll+=h.bet*2;else if(out==='push')bankroll+=h.bet;});
+    inRound=false;setButtons('idle');render();}
+
+  dealBtn.onclick=startRound;hitBtn.onclick=hit;standBtn.onclick=stand;doubleBtn.onclick=double;splitBtn.onclick=split;surrenderBtn.onclick=surrender;newShoeBtn.onclick=()=>{freshShoe();showToast('New 6‑deck shoe');};betInput.onchange=()=>{bet=Math.max(1,Number(betInput.value)||10);betInput.value=bet;betDisp.textContent=bet;};
+  freshShoe();setButtons('idle');render();
+})();
+</script>
+</body>
+</html>
