@@ -1,1 +1,250 @@
-x
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Snake</title>
+  <style>
+    :root {
+      --bg:#0f1220; --panel:#14182b; --ink:#e6e8ef; --accent:#54d6a1; --muted:#7c86a2;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; display: grid; place-items: center; gap: 16px;
+      background: radial-gradient(1200px 600px at 20% 10%, #151936 0%, #0f1220 60%);
+      color: var(--ink); font: 16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    .wrap { width: min(94vw, 720px); }
+    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    h1 { font-size: 18px; margin: 0; letter-spacing: 0.4px; color: var(--ink); }
+    .stats { display: grid; grid-auto-flow: column; gap: 12px; align-items: center; }
+    .badge { background: var(--panel); border: 1px solid #252a48; padding: 6px 10px; border-radius: 999px; color: var(--muted); }
+    .bold { color: var(--ink); font-weight: 600; }
+    .row { display:flex; gap:10px; align-items:center; }
+    button, select { background: var(--panel); color: var(--ink); border: 1px solid #252a48; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+    button:hover { border-color:#2f355c; }
+    canvas { width: 100%; aspect-ratio: 1 / 1; background: #0a0d1a; border: 1px solid #252a48; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.35) inset; }
+    .help { color: var(--muted); font-size: 12px; text-align: center; margin-top: 10px; }
+    .toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: #11152a; color: #c5c9e6; border: 1px solid #2b3157; padding: 8px 12px; border-radius: 10px; opacity: 0; transition: opacity .25s ease; pointer-events: none; }
+    .toast.show { opacity: 1; }
+    .controls { display:none; margin-top:10px; }
+    @media (pointer:coarse) {
+      .controls { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+      .controls button { padding:14px; font-size:18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Snake</h1>
+      <div class="stats">
+        <span class="badge">Score: <span id="score" class="bold">0</span></span>
+        <span class="badge">Best: <span id="best" class="bold">0</span></span>
+        <div class="row">
+          <label for="speed" class="badge">Speed</label>
+          <select id="speed" aria-label="Speed">
+            <option value="120">Chill</option>
+            <option value="90" selected>Normal</option>
+            <option value="60">Fast</option>
+            <option value="40">Insane</option>
+          </select>
+          <button id="pauseBtn" aria-label="Pause/Resume">Pause</button>
+          <button id="resetBtn" aria-label="Reset">Reset</button>
+        </div>
+      </div>
+    </header>
+
+    <canvas id="board" width="480" height="480" role="img" aria-label="Snake game board"></canvas>
+    <div class="controls">
+      <button data-dir="up">↑</button>
+      <button data-dir="left">←</button>
+      <button data-dir="down">↓</button>
+      <button data-dir="right">→</button>
+    </div>
+    <div class="help">Use arrow keys or WASD. P pauses. R resets. Eat fruit. Avoid walls and yourself.</div>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <script>
+  (function(){
+    // Grid settings
+    const cols = 24, rows = 24; // 24x24 grid
+    const canvas = document.getElementById('board');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const speedSel = document.getElementById('speed');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const toastEl = document.getElementById('toast');
+
+    const tile = Math.floor(Math.min(canvas.width/cols, canvas.height/rows));
+    const W = tile*cols, H = tile*rows;
+    canvas.width = W; canvas.height = H;
+
+    const keyMap = { ArrowUp:'up', ArrowDown:'down', ArrowLeft:'left', ArrowRight:'right', w:'up', a:'left', s:'down', d:'right', W:'up', A:'left', S:'down', D:'right' };
+
+    let loopMs = parseInt(speedSel.value,10);
+    let lastTick = 0; let acc = 0; let paused = false; let rafId = null; let gameOver = false;
+
+    const start = () => ({
+      dir: 'right',
+      nextDir: 'right',
+      snake: [{x:8,y:12},{x:7,y:12},{x:6,y:12}],
+      fruit: placeFruit([{x:8,y:12},{x:7,y:12},{x:6,y:12}]),
+      score: 0
+    });
+    let state = start();
+
+    bestEl.textContent = localStorage.getItem('snake_best') || '0';
+
+    // Helpers
+    function placeFruit(blocked){
+      const blockedSet = new Set(blocked.map(p => p.x+','+p.y));
+      let x,y;
+      do { x = Math.floor(Math.random()*cols); y = Math.floor(Math.random()*rows); }
+      while(blockedSet.has(x+','+y));
+      return {x,y};
+    }
+    function drawCell(x,y, fill, stroke){
+      ctx.fillStyle = fill; ctx.strokeStyle = stroke; ctx.lineWidth = 1;
+      const r = 8; // rounded
+      const px = x*tile, py = y*tile;
+      const w = tile, h = tile;
+      ctx.beginPath();
+      ctx.moveTo(px+r, py);
+      ctx.arcTo(px+w, py, px+w, py+h, r);
+      ctx.arcTo(px+w, py+h, px, py+h, r);
+      ctx.arcTo(px, py+h, px, py, r);
+      ctx.arcTo(px, py, px+w, py, r);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+    function showToast(msg){
+      toastEl.textContent = msg; toastEl.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(()=> toastEl.classList.remove('show'), 1200);
+    }
+
+    // Game logic
+    function step(){
+      const head = { ...state.snake[0] };
+      const dir = state.nextDir; // prevent double-turns into self
+      state.dir = dir;
+      if(dir==='up') head.y -= 1; else if(dir==='down') head.y += 1; else if(dir==='left') head.x -= 1; else head.x += 1;
+
+      // Collisions: wall or self
+      if(head.x<0 || head.x>=cols || head.y<0 || head.y>=rows || state.snake.some(p=>p.x===head.x && p.y===head.y)){
+        gameOver = true; handleGameOver(); return;
+      }
+
+      state.snake.unshift(head);
+      // Eat fruit
+      if(head.x===state.fruit.x && head.y===state.fruit.y){
+        state.score += 10; scoreEl.textContent = state.score;
+        state.fruit = placeFruit(state.snake);
+        // Slightly speed up each fruit
+        loopMs = Math.max(35, Math.floor(loopMs * 0.98));
+      } else {
+        state.snake.pop();
+      }
+    }
+
+    function handleGameOver(){
+      const best = Math.max(state.score, parseInt(localStorage.getItem('snake_best')||'0',10));
+      localStorage.setItem('snake_best', String(best));
+      bestEl.textContent = String(best);
+      showToast('Game over. Press R to restart.');
+    }
+
+    function draw(){
+      // Background grid
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle = '#0b0f20';
+      ctx.fillRect(0,0,W,H);
+      // subtle grid
+      ctx.strokeStyle = '#151b33'; ctx.lineWidth = 1;
+      for(let x=1; x<cols; x++){ ctx.beginPath(); ctx.moveTo(x*tile+0.5,0); ctx.lineTo(x*tile+0.5,H); ctx.stroke(); }
+      for(let y=1; y<rows; y++){ ctx.beginPath(); ctx.moveTo(0,y*tile+0.5); ctx.lineTo(W,y*tile+0.5); ctx.stroke(); }
+
+      // Fruit
+      drawCell(state.fruit.x, state.fruit.y, '#54d6a1', '#2f6f5a');
+
+      // Snake
+      for(let i=0;i<state.snake.length;i++){
+        const p = state.snake[i];
+        const hue = 200 + Math.min(i*1.2, 40);
+        const fill = `hsl(${hue} 60% ${Math.max(35, 55 - i*0.4)}%)`;
+        drawCell(p.x, p.y, fill, '#222a4d');
+      }
+
+      if(paused){
+        ctx.fillStyle = 'rgba(0,0,0,.35)';
+        ctx.fillRect(0,0,W,H);
+        ctx.fillStyle = '#c5c9e6';
+        ctx.font = 'bold 28px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('Paused', W/2, H/2);
+      }
+
+      if(gameOver){
+        ctx.fillStyle = 'rgba(0,0,0,.4)';
+        ctx.fillRect(0,0,W,H);
+        ctx.fillStyle = '#e6e8ef';
+        ctx.font = 'bold 24px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('Game Over', W/2, H/2 - 8);
+        ctx.font = '14px system-ui';
+        ctx.fillStyle = '#c5c9e6';
+        ctx.fillText('Press R to restart', W/2, H/2 + 18);
+      }
+    }
+
+    function loop(ts){
+      rafId = requestAnimationFrame(loop);
+      if(paused || gameOver) { draw(); return; }
+      if(!lastTick) lastTick = ts;
+      const dt = ts - lastTick; lastTick = ts; acc += dt;
+      while(acc >= loopMs){ step(); acc -= loopMs; }
+      draw();
+    }
+
+    function reset(full=true){
+      state = start();
+      scoreEl.textContent = '0';
+      gameOver = false; paused = false; acc = 0; lastTick = 0; loopMs = parseInt(speedSel.value,10);
+      if(full){ showToast('New game'); }
+    }
+
+    // Input
+    document.addEventListener('keydown', (e)=>{
+      const k = keyMap[e.key]; if(!k) return;
+      e.preventDefault();
+      const opposite = {up:'down',down:'up',left:'right',right:'left'};
+      if(opposite[state.dir] !== k) state.nextDir = k;
+    });
+    document.addEventListener('keydown', (e)=>{
+      if(e.key==='p' || e.key==='P') { paused = !paused; pauseBtn.textContent = paused? 'Resume':'Pause'; showToast(paused?'Paused':'Resumed'); }
+      if(e.key==='r' || e.key==='R') { reset(true); }
+    });
+
+    document.querySelector('.controls').addEventListener('click', (e)=>{
+      const b = e.target.closest('button'); if(!b) return;
+      const k = b.dataset.dir; const opposite = {up:'down',down:'up',left:'right',right:'left'};
+      if(opposite[state.dir] !== k) state.nextDir = k;
+    });
+
+    speedSel.addEventListener('change', ()=>{ loopMs = parseInt(speedSel.value,10); showToast('Speed set'); });
+    pauseBtn.addEventListener('click', ()=>{ paused = !paused; pauseBtn.textContent = paused? 'Resume':'Pause'; });
+    resetBtn.addEventListener('click', ()=> reset(true));
+
+    // Start
+    reset(false);
+    rafId = requestAnimationFrame(loop);
+  })();
+  </script>
+</body>
+</html>
