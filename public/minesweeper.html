@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Minesweeper</title>
+<style>
+  :root{--bg:#0f1220;--panel:#14182b;--grid:#0b0f20;--ink:#e6e8ef;--muted:#94a3b8;--line:#28314f;--accent:#66d9a3;--danger:#ff5d73}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;display:grid;place-items:center;background:radial-gradient(1100px 600px at 10% 0%,#171a39 0%,#0f1220 60%);color:var(--ink);font:15px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  .wrap{width:min(96vw,720px)}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  h1{font-size:18px;margin:0}
+  .stats{display:flex;gap:8px;flex-wrap:wrap}
+  .badge{background:var(--panel);border:1px solid var(--line);padding:6px 10px;border-radius:999px;color:var(--muted)}
+  .bold{color:var(--ink);font-weight:600}
+  .row{display:flex;gap:8px;align-items:center}
+  select,button{background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:8px 10px;border-radius:10px;cursor:pointer}
+  button:hover,select:hover{border-color:#34406a}
+  #board{display:grid;gap:4px;background:var(--grid);border:1px solid var(--line);border-radius:14px;padding:10px}
+  .cell{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;background:#10152b;border:1px solid #232b4a;font-weight:700;user-select:none}
+  .cell.revealed{background:#0e1430;border-color:#2a345e}
+  .cell.mine{background:#2a1120}
+  .cell.flag{color:#ffd166}
+  .cell:hover{filter:brightness(1.1)}
+  .num0{color:#9aa5bd}
+  .num1{color:#9cdcfe}
+  .num2{color:#4fd1c5}
+  .num3{color:#f6bd60}
+  .num4{color:#f78c6c}
+  .num5{color:#ff5370}
+  .num6{color:#c792ea}
+  .num7{color:#e6e8ef}
+  .num8{color:#94a3b8}
+  .help{color:var(--muted);font-size:12px;text-align:center;margin-top:8px}
+  .toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#11152a;color:#c5c9e6;border:1px solid #2b3157;padding:8px 12px;border-radius:10px;opacity:0;transition:opacity .2s ease;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Minesweeper</h1>
+      <div class="stats">
+        <span class="badge">Mines: <span id="mineCount" class="bold">0</span></span>
+        <span class="badge">Flags: <span id="flags" class="bold">0</span></span>
+        <span class="badge">Time: <span id="time" class="bold">0</span>s</span>
+        <div class="row">
+          <label class="badge" for="level">Level</label>
+          <select id="level">
+            <option value="9x9x10">Beginner 9×9×10</option>
+            <option value="16x16x40" selected>Intermediate 16×16×40</option>
+            <option value="30x16x99">Expert 30×16×99</option>
+          </select>
+          <button id="reset">Reset</button>
+        </div>
+      </div>
+    </header>
+
+    <div id="board" aria-label="Minesweeper board" role="grid"></div>
+    <div class="help">Left click to reveal. Right click to flag. Click a revealed number to chord when flags match. R to reset.</div>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+<script>
+(() => {
+  const boardEl = document.getElementById('board');
+  const mineCountEl = document.getElementById('mineCount');
+  const flagsEl = document.getElementById('flags');
+  const timeEl = document.getElementById('time');
+  const levelSel = document.getElementById('level');
+  const resetBtn = document.getElementById('reset');
+  const toastEl = document.getElementById('toast');
+
+  let W=16,H=16,MINES=40; // defaults
+  let cells = []; // {x,y,el,mine,revealed,flag,adj}
+  let firstClick = true;
+  let flags = 0; let revealed = 0; let timer=null; let time=0; let dead=false; let won=false;
+
+  const dirs = [
+    [-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]
+  ];
+
+  function showToast(msg){
+    toastEl.textContent = msg; toastEl.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=> toastEl.classList.remove('show'), 1200);
+  }
+
+  function parseLevel(v){
+    const [w,h,m] = v.split('x').map(n=>parseInt(n,10));
+    return {w,h,m};
+  }
+
+  function idx(x,y){ return y*W+x; }
+
+  function inBounds(x,y){ return x>=0 && x<W && y>=0 && y<H; }
+
+  function neighbors(x,y){
+    const out=[]; for(const [dx,dy] of dirs){ const nx=x+dx, ny=y+dy; if(inBounds(nx,ny)) out.push(cells[idx(nx,ny)]); }
+    return out;
+  }
+
+  function placeMines(safeX,safeY){
+    let placed=0; const safe = new Set([`${safeX},${safeY}`, ...neighbors(safeX,safeY).map(c=>`${c.x},${c.y}`)]);
+    while(placed<MINES){
+      const x = Math.floor(Math.random()*W), y = Math.floor(Math.random()*H);
+      if(safe.has(`${x},${y}`)) continue;
+      const c = cells[idx(x,y)]; if(c.mine) continue; c.mine=true; placed++;
+    }
+    // compute adj counts
+    for(const c of cells){ c.adj = neighbors(c.x,c.y).reduce((n,nb)=> n + (nb.mine?1:0), 0); }
+  }
+
+  function startTimer(){ if(timer) return; timer = setInterval(()=>{ time++; timeEl.textContent=time; },1000); }
+  function stopTimer(){ if(timer){ clearInterval(timer); timer=null; } }
+
+  function reset(){
+    const {w,h,m}=parseLevel(levelSel.value); W=w; H=h; MINES=m;
+    firstClick=true; flags=0; revealed=0; dead=false; won=false; time=0; timeEl.textContent='0'; stopTimer();
+    mineCountEl.textContent = MINES; flagsEl.textContent='0';
+    // grid
+    boardEl.style.gridTemplateColumns = `repeat(${W}, 32px)`;
+    boardEl.innerHTML='';
+    cells = [];
+    for(let y=0;y<H;y++){
+      for(let x=0;x<W;x++){
+        const el = document.createElement('button');
+        el.className='cell'; el.setAttribute('role','gridcell'); el.setAttribute('aria-label','hidden cell');
+        el.addEventListener('contextmenu', e=>{ e.preventDefault(); onFlag(x,y); });
+        el.addEventListener('click', ()=> onClick(x,y));
+        el.addEventListener('mousedown', e=>{ if(e.button===1){ e.preventDefault(); onChord(x,y); }});
+        cells.push({x,y,el,mine:false,revealed:false,flag:false,adj:0});
+        boardEl.appendChild(el);
+      }
+    }
+  }
+
+  function onClick(x,y){
+    if(dead||won) return;
+    const c = cells[idx(x,y)];
+    if(c.revealed||c.flag) return;
+    if(firstClick){ placeMines(x,y); firstClick=false; startTimer(); }
+    reveal(c);
+  }
+
+  function onFlag(x,y){
+    if(dead||won) return;
+    const c = cells[idx(x,y)];
+    if(c.revealed) return;
+    c.flag = !c.flag; c.el.classList.toggle('flag', c.flag); c.el.textContent = c.flag ? '⚑' : '';
+    flags += c.flag ? 1 : -1; flagsEl.textContent = flags;
+  }
+
+  function onChord(x,y){
+    if(dead||won) return;
+    const c = cells[idx(x,y)];
+    if(!c.revealed || c.adj===0) return;
+    const nbs = neighbors(x,y);
+    const flagged = nbs.filter(n=>n.flag).length;
+    if(flagged === c.adj){
+      for(const n of nbs){ if(!n.flag && !n.revealed) reveal(n); }
+    }
+  }
+
+  function reveal(c){
+    if(c.revealed||c.flag) return;
+    c.revealed=true; c.el.classList.add('revealed');
+    if(c.mine){ c.el.classList.add('mine'); c.el.textContent='💣'; lose(); return; }
+    revealed++;
+    if(c.adj>0){ c.el.textContent = String(c.adj); c.el.classList.add('num'+c.adj); c.el.setAttribute('aria-label',`${c.adj}`); }
+    else {
+      c.el.classList.add('num0');
+      // flood fill
+      for(const n of neighbors(c.x,c.y)){ if(!n.revealed && !n.mine) reveal(n); }
+    }
+    checkWin();
+  }
+
+  function lose(){
+    dead=true; stopTimer();
+    for(const c of cells){ if(c.mine){ c.el.textContent='💣'; if(!c.revealed){ c.el.classList.add('mine'); } } }
+    showToast('Boom. Press Reset.');
+  }
+
+  function checkWin(){
+    const totalSafe = W*H - MINES;
+    if(revealed>=totalSafe){ won=true; stopTimer();
+      // mark remaining flags
+      for(const c of cells){ if(c.mine && !c.flag){ c.flag=true; c.el.classList.add('flag'); c.el.textContent='⚑'; } }
+      showToast('Cleared. GG.');
+    }
+  }
+
+  levelSel.addEventListener('change', ()=> reset());
+  resetBtn.addEventListener('click', ()=> reset());
+  document.addEventListener('keydown', e=>{ if(e.key==='r' || e.key==='R') reset(); });
+
+  // init
+  reset();
+})();
+</script>
+</body>
+</html>
