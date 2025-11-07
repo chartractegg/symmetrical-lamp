@@ -9,40 +9,36 @@
     --bg:#0b1020;         /* page backdrop */
     --felt:#0e4b36;       /* table felt */
     --felt-dark:#0c3b2b;
-    --line:#0a2f24;       /* table border */
+    --rail1:#0a231c;      /* rail shadows */
+    --rail2:#071812;
     --ink:#f1f5f9;        /* text */
     --muted:#9fb4c5;      /* muted text */
     --panel:#151a2f;      /* controls panel */
     --accent:#66d9a3;     /* highlight */
-    --warn:#ffd166;       /* chips */
-    --chip:#f59e0b;       /* chip color */
-    --chip-edge:#111827;  /* chip edge */
+    --warn:#ffd166;       /* info accents */
+
     --card:#ffffff;       /* card face */
-    --card-red:#c81e1e;   /* hearts/diamonds */
+    --card-edge:#b9c1c9;  /* card border */
+    --red:#c1121f;        /* hearts/diamonds */
+    --black:#0b0b0b;      /* spades/clubs (true black) */
+
+    --chip-body:#d32f2f;  /* primary chip color */
+    --chip-core:#fff4e6;
+    --chip-edge:#0f172a;  /* chip border */
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{margin:0;background:radial-gradient(1200px 700px at 15% 0%,#171b3a 0%,var(--bg) 60%);color:var(--ink);font:15px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;display:grid;place-items:center}
-
   .wrap{width:min(98vw,1100px)}
+
   header{display:flex;justify-content:space-between;align-items:center;margin:10px 0 12px 0}
   h1{font-size:18px;margin:0}
   .stats{display:flex;gap:10px;flex-wrap:wrap}
   .badge{background:var(--panel);border:1px solid #2a3159;padding:6px 10px;border-radius:999px;color:var(--muted)}
   .bold{font-weight:700;color:var(--ink)}
 
-  /* Table */
-  .table{
-    position:relative;
-    border-radius:24px;
-    background:radial-gradient(1200px 600px at 60% -10%,#11694e 0%, var(--felt) 40%, var(--felt-dark) 100%);
-    border:1px solid var(--line);
-    padding:18px 18px 26px 18px;
-    box-shadow:0 18px 60px rgba(0,0,0,.35) inset, 0 14px 34px rgba(0,0,0,.45);
-    overflow:hidden;
-  }
-
-  .rail{position:absolute; inset:8px; border-radius:20px; box-shadow: 0 0 0 4px #0a231c inset, 0 0 0 8px #071812 inset; pointer-events:none}
+  .table{position:relative;border-radius:24px;background:radial-gradient(1200px 600px at 60% -10%,#11694e 0%, var(--felt) 40%, var(--felt-dark) 100%);border:1px solid #0a2a22;padding:18px 18px 26px 18px;box-shadow:0 18px 60px rgba(0,0,0,.35) inset, 0 14px 34px rgba(0,0,0,.45);overflow:hidden}
+  .rail{position:absolute; inset:8px; border-radius:20px; box-shadow: 0 0 0 4px var(--rail1) inset, 0 0 0 8px var(--rail2) inset; pointer-events:none}
 
   .top-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
   .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -52,40 +48,33 @@
 
   .layout{display:grid;grid-template-columns:1.1fr 220px;gap:16px;margin-top:12px}
 
-  /* Shoe + tray */
-  .right{
-    display:grid;gap:12px;align-content:start
-  }
-  .shoe, .tray{
-    background:rgba(0,0,0,.25);border:1px solid #0d2520;border-radius:12px;padding:12px;min-height:110px;position:relative
-  }
+  .right{display:grid;gap:12px;align-content:start}
+  .shoe,.tray{background:rgba(0,0,0,.25);border:1px solid #0d2520;border-radius:12px;padding:12px;min-height:110px;position:relative}
   .shoe::before{content:"Shoe";position:absolute;top:6px;left:10px;color:#cbd5e1;font-size:12px;opacity:.7}
   .tray::before{content:"Discard";position:absolute;top:6px;left:10px;color:#cbd5e1;font-size:12px;opacity:.7}
 
-  /* Stage */
-  .stage{position:relative;min-height:420px;border:1px dashed rgba(0,0,0,.2);border-radius:12px;padding:10px}
-  .dealer, .players{position:relative}
+  .stage{position:relative;min-height:420px;border:1px dashed rgba(0,0,0,.18);border-radius:12px;padding:10px}
   .dealer{display:grid;justify-items:center;margin-top:4px;margin-bottom:14px}
   .dealer .label{font-weight:700;letter-spacing:.5px;margin-bottom:6px}
   .players{display:grid;gap:12px}
-
-  .hand{
-    position:relative;background:rgba(0,0,0,.18);border:1px solid #0b2320;border-radius:12px;padding:10px;min-height:120px
-  }
+  .hand{position:relative;background:rgba(0,0,0,.18);border:1px solid #0b2320;border-radius:12px;padding:10px;min-height:120px}
   .hand.active{outline:2px solid var(--accent)}
   .hand .label{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-  .bet-circle{position:absolute;bottom:8px;left:8px;width:60px;height:60px;border-radius:50%;border:2px dashed rgba(255,255,255,.35);display:grid;place-items:center;color:#fff8; font-size:12px}
+  .bet-circle{position:absolute;bottom:8px;left:8px;width:60px;height:60px;border-radius:50%;display:grid;place-items:center}
 
-  /* Cards */
+  /* Casino chip */
+  .chip{width:52px;height:52px;border-radius:50%;position:relative;display:grid;place-items:center;box-shadow:0 6px 12px rgba(0,0,0,.35)}
+  .chip::before{content:"";position:absolute;inset:6px;border-radius:50%;background:radial-gradient(circle at 30% 30%, var(--chip-core) 0 30%, #ffe0b3 30% 60%, var(--chip-core) 60% 100%)}
+  .chip::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg, var(--chip-body) 0 10%, transparent 10% 20%, var(--chip-body) 20% 30%, transparent 30% 40%, var(--chip-body) 40% 50%, transparent 50% 60%, var(--chip-body) 60% 70%, transparent 70% 80%, var(--chip-body) 80% 90%, transparent 90% 100%);border:3px solid var(--chip-edge)}
+  .chip.fly{position:fixed;left:0;top:0;will-change:transform}
+
   .cards{position:relative;display:flex;gap:8px;flex-wrap:wrap;min-height:96px}
-  .card{width:64px;height:88px;border-radius:10px;border:1px solid #b9c1c9;background:var(--card);display:grid;place-items:center;font-weight:800;font-size:20px;position:relative;box-shadow:0 6px 14px rgba(0,0,0,.25)}
-  .card.red{color:var(--card-red)}
-  .card.back{background:repeating-linear-gradient(45deg,#162042 0 8px,#0e1537 8px 16px);border-color:#2b335f}
-
-  /* Animations */
-  .flying{position:absolute; left:0; top:0; will-change:transform, left, top}
-  .chip{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#ffd8a6 0 28%,var(--chip) 30% 62%,#c47f09 62% 100%);border:2px solid var(--chip-edge);box-shadow:0 3px 8px rgba(0,0,0,.35)}
-  .chip.fly{position:absolute;left:0;top:0;will-change:transform}
+  .card{width:64px;height:88px;border-radius:10px;border:1px solid var(--card-edge);background:var(--card);display:grid;place-items:center;position:relative;box-shadow:0 6px 14px rgba(0,0,0,.25)}
+  .rank{font-weight:800;font-size:20px}
+  .suit{font-weight:800;font-size:20px;margin-left:2px}
+  .red{color:var(--red)}
+  .black{color:var(--black)}
+  .back{background:repeating-linear-gradient(45deg,#162042 0 8px,#0e1537 8px 16px);border-color:#2b335f}
 
   .msg{margin-top:8px;color:#e5eef8}
   .hint{color:#cbd5e1;font-size:12px;margin-top:6px;opacity:.8}
@@ -99,7 +88,7 @@
         <span class="badge">Bankroll: $<span id="bank" class="bold">1000</span></span>
         <span class="badge">Bet: $<span id="betDisp" class="bold">10</span></span>
         <span class="badge">Shoe: <span id="shoeLeft" class="bold">0</span></span>
-        <span class="badge">Rules: 3:2 BJ · S17 · Split, Double, Surrender</span>
+        <span class="badge">Rules: 3:2 BJ · S17 · Split · Double · Surrender</span>
       </div>
     </header>
 
@@ -117,7 +106,7 @@
           <button id="split" disabled>Split</button>
           <button id="surrender" disabled>Surrender</button>
         </div>
-        <div class="hint">Tip: You can split same‑value pairs. Double on first action. Surrender on first action. No sounds, simple chips.</div>
+        <div class="hint">One player hand. Split pairs. Double or surrender on first action. 600ms animations.</div>
       </div>
 
       <div class="layout">
@@ -139,53 +128,51 @@
 
 <script>
 (()=>{
-  // ====== Model ======
+  // ===== Helpers =====
+  const $ = id => document.getElementById(id);
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
   const SUITS=['♠','♥','♦','♣'];
   const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-  const DECKS=6, CUT=0.75; // reshuffle when 25% remains
+  const DECKS=6, CUT=0.75; // reshuffle when ~25% remains
+  const DEAL_MS = 600;     // card animation time
+  const CHIP_MS = 600;     // chip animation time
 
   let shoe=[], discard=[];
-  let bankroll=1000; let bet=10;
-  let dealer=[]; let playerHands=[]; // [{cards:[], bet:number, finished:bool}]
-  let active=0; let inRound=false; let firstAction=true; let holeDown=true;
+  let bankroll=1000, bet=10;
+  let dealer=[], hands=[];   // hands = [{cards, bet, finished}]
+  let active=0, inRound=false, firstAction=true, holeDown=true;
 
-  const bankEl=$('#bank'), betDisp=$('#betDisp'), shoeLeftEl=$('#shoeLeft'), msgEl=$('#msg');
-  const dealerCardsEl=$('#dealerCards'), dealerTotalEl=$('#dealerTotal'), playersEl=$('#players');
-  const shoeEl=$('#shoe'), trayEl=$('#tray');
-  const dealBtn=$('#deal'), newShoeBtn=$('#newShoe'), hitBtn=$('#hit'), standBtn=$('#stand'), doubleBtn=$('#double'), splitBtn=$('#split'), surrenderBtn=$('#surrender');
-  const betInput=$('#bet');
+  // UI refs
+  const bankEl=$('bank'), betDisp=$('betDisp'), betInput=$('bet');
+  const shoeLeftEl=$('shoeLeft');
+  const dealerCardsEl=$('dealerCards'), dealerTotalEl=$('dealerTotal');
+  const playersEl=$('players'), msgEl=$('msg');
+  const shoeEl=$('shoe');
+  const dealBtn=$('deal'), newShoeBtn=$('newShoe'), hitBtn=$('hit'), standBtn=$('stand'), doubleBtn=$('double'), splitBtn=$('split'), surrenderBtn=$('surrender');
 
-  // ====== Utility ======
-  function $(s){return document.getElementById(s.replace('#',''));}
-  function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
-  function freshShoe(){shoe=[];discard=[];for(let d=0;d<DECKS;d++){for(const s of SUITS){for(const r of RANKS){shoe.push({rank:r,suit:s});}}}shuffle(shoe);updateShoe();}
-  function updateShoe(){shoeLeftEl.textContent=String(shoe.length);}  
-  function draw(){if(!shoe.length) freshShoe(); const c=shoe.pop(); updateShoe(); return c;}
-  function cardValue(r){if(r==='A')return 11; if(['K','Q','J','10'].includes(r))return 10; return parseInt(r,10);}  
-  function handValue(cards){let t=0,a=0;for(const c of cards){t+=cardValue(c.rank); if(c.rank==='A')a++;}while(t>21 && a>0){t-=10;a--;}return{total:t,soft:a>0&&t<=21};}
-  function sameValue(a,b){return cardValue(a.rank)===cardValue(b.rank);}  
+  // ===== Deck/Shoe =====
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
+  function freshShoe(){ shoe=[]; discard=[]; for(let d=0; d<DECKS; d++){ for(const s of SUITS){ for(const r of RANKS){ shoe.push({rank:r,suit:s}); }}} shuffle(shoe); updateShoe(); }
+  function updateShoe(){ shoeLeftEl.textContent = String(shoe.length); }
+  function draw(){ if(!shoe.length) freshShoe(); const c = shoe.pop(); updateShoe(); return c; }
 
-  function enable(el,on){el.disabled=!on;}
-  function setStage(stage){
-    if(stage==='idle'){
-      enable(dealBtn,true); enable(newShoeBtn,true);
-      [hitBtn,standBtn,doubleBtn,splitBtn,surrenderBtn].forEach(b=>enable(b,false));
-    } else if(stage==='acting'){
-      enable(dealBtn,false); enable(newShoeBtn,true);
-      const h=playerHands[active];
-      const canD = firstAction && bankroll>=h.bet;
-      const canS = firstAction && h.cards.length===2 && bankroll>=h.bet && sameValue(h.cards[0],h.cards[1]);
-      const canSR = firstAction;
-      enable(hitBtn,true); enable(standBtn,true); enable(doubleBtn,canD); enable(splitBtn,canS); enable(surrenderBtn,canSR);
-    } else if(stage==='locked'){
-      enable(dealBtn,true); enable(newShoeBtn,true);
-      [hitBtn,standBtn,doubleBtn,splitBtn,surrenderBtn].forEach(b=>enable(b,false));
-    }
+  // ===== Values =====
+  const isRed = s => s==='♥' || s==='♦';
+  function cardValue(r){ if(r==='A') return 11; if(['10','J','Q','K'].includes(r)) return 10; return parseInt(r,10); }
+  function handValue(cards){ let t=0,a=0; for(const c of cards){ t+=cardValue(c.rank); if(c.rank==='A') a++; } while(t>21 && a>0){ t-=10; a--; } return {total:t, soft:a>0 && t<=21}; }
+  const sameValue = (a,b) => cardValue(a.rank)===cardValue(b.rank);
+
+  // ===== Render =====
+  function cardNode(face){
+    const el = document.createElement('div');
+    el.className = 'card';
+    const r = document.createElement('span'); r.className='rank'; r.textContent=face.rank;
+    const s = document.createElement('span'); s.className='suit ' + (isRed(face.suit)?'red':'black'); s.textContent=face.suit;
+    el.appendChild(r); el.appendChild(s);
+    return el;
   }
-
-  // ====== Rendering ======
-  function cardNode(c){const el=document.createElement('div'); el.className='card'+((c.suit==='♥'||c.suit==='♦')?' red':''); el.textContent=c.rank+c.suit; return el;}
-  function backNode(){const el=document.createElement('div'); el.className='card back'; return el;}
+  function backNode(){ const el=document.createElement('div'); el.className='card back'; return el; }
 
   function render(){
     // dealer
@@ -193,149 +180,164 @@
     if(dealer.length){
       dealerCardsEl.appendChild(cardNode(dealer[0]));
       if(holeDown){ dealerCardsEl.appendChild(backNode()); }
-      else { for(let i=1;i<dealer.length;i++) dealerCardsEl.appendChild(cardNode(dealer[i])); }
+      else{ for(let i=1;i<dealer.length;i++) dealerCardsEl.appendChild(cardNode(dealer[i])); }
     }
-    dealerTotalEl.textContent = holeDown ? (dealer.length? handValue([dealer[0]]).total+"+":"") : handValue(dealer).total;
+    dealerTotalEl.textContent = holeDown && dealer.length? String(handValue([dealer[0]]).total) + '+' : (dealer.length? String(handValue(dealer).total):'');
 
-    // players
+    // players (one seat, but may split)
     playersEl.innerHTML='';
-    playerHands.forEach((h,i)=>{
+    hands.forEach((h,i)=>{
       const wrap=document.createElement('div'); wrap.className='hand'+(i===active?' active':'');
-      const label=document.createElement('div'); label.className='label'; label.innerHTML='<strong>Hand '+(i+1)+'</strong> <span class="badge">'+handValue(h.cards).total+'</span>';
+      const label=document.createElement('div'); label.className='label'; label.innerHTML = `<strong>Hand ${i+1}</strong> <span class="badge">${handValue(h.cards).total}</span>`;
       const cards=document.createElement('div'); cards.className='cards'; h.cards.forEach(c=>cards.appendChild(cardNode(c)));
-      const betCircle=document.createElement('div'); betCircle.className='bet-circle'; betCircle.textContent='$'+h.bet;
-      wrap.appendChild(label); wrap.appendChild(cards); wrap.appendChild(betCircle); playersEl.appendChild(wrap); h.dom={wrap,cards,betCircle};
+      const betCircle=document.createElement('div'); betCircle.className='bet-circle'; betCircle.innerHTML = `<div class="chip"></div>`;
+      wrap.appendChild(label); wrap.appendChild(cards); wrap.appendChild(betCircle);
+      playersEl.appendChild(wrap); h.dom={wrap,cards,betCircle};
     });
 
-    betDisp.textContent=String(bet); bankEl.textContent=String(bankroll);
+    betDisp.textContent = String(bet);
+    bankEl.textContent = String(bankroll);
   }
 
-  // ====== Animations ======
-  function flyCard(toEl, face){
-    // Create a temporary flying card over page that moves from shoe to target
-    const rectFrom = shoeEl.getBoundingClientRect();
-    const rectTo   = toEl.getBoundingClientRect();
-    const card=document.createElement('div'); card.className='card flying'+(face && (face.suit==='♥'||face.suit==='♦')?' red':'');
-    card.style.position='fixed'; card.style.left=(rectFrom.left+6)+'px'; card.style.top=(rectFrom.top+6)+'px'; card.textContent= face? (face.rank+face.suit): '';
-    document.body.appendChild(card);
-    const dx = rectTo.left - rectFrom.left; const dy = rectTo.top - rectFrom.top;
-    card.animate([{transform:'translate(0,0) scale(0.9)'},{transform:`translate(${dx}px,${dy}px) scale(1)`}],{duration:350,easing:'ease-out'}).onfinish=()=>{ card.remove(); if(face){ toEl.appendChild(cardNode(face)); } };
+  // ===== Animations =====
+  async function flyCard(toEl, face){
+    const rf = shoeEl.getBoundingClientRect();
+    const rt = toEl.getBoundingClientRect();
+    const ghost = document.createElement('div');
+    ghost.className = 'card';
+    if(face){ ghost.appendChild(Object.assign(document.createElement('span'),{className:'rank',textContent:face.rank}));
+              ghost.appendChild(Object.assign(document.createElement('span'),{className:'suit ' + (isRed(face.suit)?'red':'black'),textContent:face.suit})); }
+    ghost.style.position='fixed'; ghost.style.left=(rf.left+8)+'px'; ghost.style.top=(rf.top+8)+'px'; ghost.style.zIndex='9999';
+    document.body.appendChild(ghost);
+    const dx = rt.left - rf.left; const dy = rt.top - rf.top;
+    await ghost.animate([{transform:'translate(0,0) scale(0.92)'},{transform:`translate(${dx}px,${dy}px) scale(1)`}],{duration:DEAL_MS,easing:'cubic-bezier(.2,.8,.2,1)'}).finished;
+    ghost.remove();
   }
 
-  function flyChip(fromEl,toEl){
-    const rf = fromEl.getBoundingClientRect(); const rt = toEl.getBoundingClientRect();
-    const ch=document.createElement('div'); ch.className='chip fly'; ch.style.position='fixed'; ch.style.left=(rf.left+8)+'px'; ch.style.top=(rf.top+8)+'px'; document.body.appendChild(ch);
-    const dx=rt.left-rf.left, dy=rt.top-rf.top;
-    ch.animate([{transform:'translate(0,0)'},{transform:`translate(${dx}px,${dy}px)`}],{duration:300,easing:'ease-out'}).onfinish=()=> ch.remove();
+  async function flyChip(fromEl, toEl){
+    const rf = fromEl.getBoundingClientRect();
+    const rt = toEl.getBoundingClientRect();
+    const chip = document.createElement('div'); chip.className='chip fly'; chip.style.left=(rf.left+6)+'px'; chip.style.top=(rf.top+6)+'px';
+    document.body.appendChild(chip);
+    const dx = rt.left - rf.left; const dy = rt.top - rf.top;
+    await chip.animate([{transform:'translate(0,0)'},{transform:`translate(${dx}px,${dy}px)`}],{duration:CHIP_MS,easing:'cubic-bezier(.2,.8,.2,1)'}).finished;
+    chip.remove();
   }
 
-  // ====== Game flow ======
-  function ensurePenetration(){ if(shoe.length < 52*DECKS*(1-CUT)) { freshShoe(); msg('New shoe shuffled'); } }
-  function msg(s){ msgEl.textContent=s||''; }
+  // ===== Controls =====
+  function enable(el,on){ el.disabled = !on; }
+  function setStage(stage){
+    if(stage==='idle'){
+      enable(dealBtn,true); enable(newShoeBtn,true);
+      [hitBtn,standBtn,doubleBtn,splitBtn,surrenderBtn].forEach(b=>enable(b,false));
+    } else if(stage==='acting'){
+      enable(dealBtn,false); enable(newShoeBtn,true);
+      const h = hands[active];
+      const canD = firstAction && bankroll>=h.bet;
+      const canS = firstAction && h.cards.length===2 && bankroll>=h.bet && sameValue(h.cards[0],h.cards[1]);
+      enable(hitBtn,true); enable(standBtn,true); enable(doubleBtn,canD); enable(splitBtn,canS); enable(surrenderBtn,firstAction);
+    } else if(stage==='locked'){
+      enable(dealBtn,true); enable(newShoeBtn,true);
+      [hitBtn,standBtn,doubleBtn,splitBtn,surrenderBtn].forEach(b=>enable(b,false));
+    }
+  }
 
-  function startRound(){
+  function ensurePenetration(){ if(shoe.length < 52*DECKS*(1-CUT)) freshShoe(); }
+  function msg(txt=''){ msgEl.textContent = txt; }
+
+  // ===== Game flow =====
+  async function startRound(){
     bet = Math.max(1, Math.floor(Number(betInput.value||10)));
     if(bet>bankroll){ msg('Bet exceeds bankroll'); return; }
     ensurePenetration();
-    bankroll -= bet; // take initial bet
 
-    // initialize hands
-    dealer=[draw(), draw()];
-    playerHands=[{cards:[/* dealt below */], bet, finished:false},];
-    active=0; inRound=true; firstAction=true; holeDown=true; msg('');
+    // init
+    bankroll -= bet; hands=[{cards:[], bet, finished:false}]; dealer=[]; active=0; inRound=true; firstAction=true; holeDown=true; msg('');
     render();
 
-    // Chip animation from bankroll badge to bet circle
-    flyChip(bankEl.closest('span')||document.body, playerHands[0].dom?.betCircle||playersEl);
+    // chip to bet circle
+    const bankBadge = bankEl.parentElement.parentElement; // the outer badge
+    await flyChip(bankBadge, playersEl); // to area; purely visual
 
-    // deal sequence with animations
-    const p0 = draw(); const d0 = draw(); const p1 = draw(); const d1 = draw();
-    playerHands[0].cards=[]; dealer=[]; render();
+    // deal sequence: P, D, P, D(hole)
+    const p0 = draw(), d0 = draw(), p1 = draw(), d1 = draw();
 
-    // animate: p0, d0, p1, d1
-    setTimeout(()=>{ playerHands[0].cards.push(p0); render(); flyCard(playerHands[0].dom.cards, p0); }, 0);
-    setTimeout(()=>{ dealer.push(d0); render(); flyCard(dealerCardsEl, d0); }, 180);
-    setTimeout(()=>{ playerHands[0].cards.push(p1); render(); flyCard(playerHands[0].dom.cards, p1); }, 360);
-    setTimeout(()=>{ dealer.push(d1); render(); flyCard(dealerCardsEl, null); /* hole down as back */ }, 540);
-    setTimeout(()=> afterInitialDeal(), 560);
-  }
+    // deal player 1
+    await flyCard(playersEl, p0); hands[0].cards.push(p0); render();
+    await sleep(40);
+    // dealer up
+    await flyCard(dealerCardsEl, d0); dealer.push(d0); render();
+    await sleep(40);
+    // player 2
+    await flyCard(playersEl, p1); hands[0].cards.push(p1); render();
+    await sleep(40);
+    // dealer hole (fly a back)
+    await flyCard(dealerCardsEl, {rank:'', suit:''}); dealer.push(d1); render();
 
-  function afterInitialDeal(){
-    // Natural check
-    if(playerValue().total===21 || dealerPeekBJ()) { finishRound('stand'); return; }
+    // Naturals
+    if(handValue(hands[0].cards).total===21 || dealerPeekBJ()) { await finishRound(); return; }
     setStage('acting');
   }
 
   function dealerPeekBJ(){
     const up = dealer[0]?.rank; if(!up) return false;
     if(up==='A' || ['10','J','Q','K'].includes(up)){
-      holeDown=false; render(); const bj = handValue(dealer).total===21; holeDown=!bj; render(); return bj;
+      const bj = handValue(dealer).total===21; return bj; // keep hole down until dealerPlay
     }
     return false;
   }
 
-  function playerValue(i=active){ return handValue(playerHands[i].cards); }
+  function current(){ return hands[active]; }
 
-  function hit(){ if(!inRound) return; const h=playerHands[active]; const c=draw(); h.cards.push(c); firstAction=false; render(); flyCard(h.dom.cards,c); const v=handValue(h.cards).total; if(v>21){ nextHand(); } }
+  async function hit(){ if(!inRound) return; const h=current(); const c=draw(); await flyCard(h.dom.cards, c); h.cards.push(c); firstAction=false; render(); if(handValue(h.cards).total>21) await nextHand(); }
+  async function stand(){ if(!inRound) return; await nextHand(); }
+  async function double(){ const h=current(); if(!firstAction || bankroll<h.bet) return; bankroll-=h.bet; h.bet*=2; render(); await flyChip(bankEl.parentElement.parentElement, h.dom.betCircle); const c=draw(); await flyCard(h.dom.cards,c); h.cards.push(c); firstAction=false; render(); await nextHand(); }
+  async function split(){ const h=current(); if(!(firstAction && h.cards.length===2 && bankroll>=h.bet && sameValue(h.cards[0],h.cards[1]))) return; bankroll-=h.bet; const c1=h.cards[0], c2=h.cards[1]; hands.splice(active,1,{cards:[c1],bet:h.bet,finished:false},{cards:[c2],bet:h.bet,finished:false}); render(); await flyChip(bankEl.parentElement.parentElement, hands[0].dom.betCircle || playersEl); const n1=draw(), n2=draw(); await flyCard(hands[active].dom.cards,n1); hands[active].cards.push(n1); render(); await flyCard(hands[active+1].dom.cards,n2); hands[active+1].cards.push(n2); render(); setStage('acting'); }
+  async function surrender(){ if(!firstAction) return; bankroll += Math.floor(current().bet/2); inRound=false; setStage('idle'); msg('Surrendered'); render(); }
 
-  function stand(){ if(!inRound) return; nextHand(); }
-
-  function double(){ const h=playerHands[active]; if(!firstAction || bankroll<h.bet) return; bankroll-=h.bet; h.bet*=2; render(); flyChip(bankEl.closest('span')||document.body, h.dom.betCircle); const c=draw(); h.cards.push(c); firstAction=false; render(); flyCard(h.dom.cards,c); nextHand(); }
-
-  function split(){ const h=playerHands[active]; if(!(firstAction && h.cards.length===2 && bankroll>=h.bet && sameValue(h.cards[0],h.cards[1]))) return; bankroll-=h.bet; const c1=h.cards[0], c2=h.cards[1]; playerHands.splice(active,1,{cards:[c1, draw()], bet:h.bet, finished:false},{cards:[c2, draw()], bet:h.bet, finished:false}); render(); flyChip(bankEl.closest('span')||document.body, playerHands[active].dom.betCircle); setStage('acting'); }
-
-  function surrender(){ if(!firstAction) return; const h=playerHands[active]; bankroll += Math.floor(h.bet/2); inRound=false; setStage('idle'); msg('Surrendered'); render(); }
-
-  function nextHand(){
-    // Mark current finished, advance
-    playerHands[active].finished=true; firstAction=true; active++;
-    if(active >= playerHands.length){ dealerPlay(); }
+  async function nextHand(){
+    current().finished=true; firstAction=true; active++;
+    if(active >= hands.length){ await dealerPlay(); await settle(); }
     else { setStage('acting'); render(); }
   }
 
-  function dealerPlay(){
-    // Reveal hole then hit to 17 (stand on soft 17)
-    holeDown=false; render();
-    let d = handValue(dealer);
-    while(d.total < 17){ const c=draw(); dealer.push(c); render(); flyCard(dealerCardsEl,c); d = handValue(dealer); }
-    settle();
+  async function dealerPlay(){
+    // reveal and draw to 17 (stand on soft 17)
+    holeDown=false; render(); await sleep(200);
+    let hv = handValue(dealer);
+    while(hv.total < 17){ const c=draw(); await flyCard(dealerCardsEl,c); dealer.push(c); render(); hv = handValue(dealer); }
   }
 
-  function settle(){
+  async function settle(){
     const d = handValue(dealer).total;
-    let winTotal=0;
-    for(const h of playerHands){
+    let win=0;
+    for(const h of hands){
       const p = handValue(h.cards).total;
-      let outcome='lose';
-      if(p>21) outcome='lose';
-      else if(d>21 || p>d) outcome='win';
-      else if(p<d) outcome='lose';
-      else outcome='push';
-
-      if(p===21 && h.cards.length===2 && !(d===21 && dealer.length===2)) outcome='blackjack';
-
-      if(outcome==='blackjack'){ bankroll += h.bet + Math.floor(h.bet*2.5); winTotal += Math.floor(h.bet*1.5); }
-      else if(outcome==='win'){ bankroll += h.bet*2; winTotal += h.bet; }
-      else if(outcome==='push'){ bankroll += h.bet; }
+      let out='lose';
+      if(p>21) out='lose';
+      else if(d>21 || p>d) out='win';
+      else if(p<d) out='lose';
+      else out='push';
+      const playerBJ = (p===21 && h.cards.length===2);
+      const dealerBJ = (d===21 && dealer.length===2);
+      if(playerBJ && !dealerBJ) out='blackjack';
+      if(out==='blackjack'){ bankroll += h.bet + Math.floor(h.bet*2.5); win += Math.floor(h.bet*1.5); }
+      else if(out==='win'){ bankroll += h.bet*2; win += h.bet; }
+      else if(out==='push'){ bankroll += h.bet; }
     }
-    // simple chip animation back to bankroll (aggregate)
-    if(winTotal>0){
-      const last = playerHands[playerHands.length-1];
-      flyChip(last.dom.betCircle, bankEl.closest('span')||document.body);
-    }
-
-    inRound=false; setStage('idle'); render();
-    msg(winTotal>0? `You won $${winTotal}` : 'You lose');
+    // chips back to bank (visual)
+    if(win>0){ await flyChip(playersEl, bankEl.parentElement.parentElement); }
+    inRound=false; setStage('idle'); render(); msg(win>0?`You won $${win}`:'You lose');
   }
 
-  // ====== Wire up ======
+  // ===== Wire up =====
   dealBtn.addEventListener('click', ()=>{ startRound(); });
   newShoeBtn.addEventListener('click', ()=>{ freshShoe(); msg('Fresh 6‑deck shoe'); });
-  hitBtn.addEventListener('click', hit);
-  standBtn.addEventListener('click', stand);
-  doubleBtn.addEventListener('click', double);
-  splitBtn.addEventListener('click', split);
-  surrenderBtn.addEventListener('click', surrender);
+  hitBtn.addEventListener('click', ()=>{ hit(); });
+  standBtn.addEventListener('click', ()=>{ stand(); });
+  doubleBtn.addEventListener('click', ()=>{ double(); });
+  splitBtn.addEventListener('click', ()=>{ split(); });
+  surrenderBtn.addEventListener('click', ()=>{ surrender(); });
   betInput.addEventListener('change', ()=>{ bet=Math.max(1,Math.floor(Number(betInput.value)||10)); betInput.value=String(bet); betDisp.textContent=String(bet); });
 
   // init
