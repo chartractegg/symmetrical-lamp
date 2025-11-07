@@ -15,12 +15,11 @@
     --muted:#9fb4c5;      /* muted text */
     --panel:#151a2f;      /* controls panel */
     --accent:#66d9a3;     /* highlight */
-    --warn:#ffd166;       /* info accents */
 
     --card:#ffffff;       /* card face */
     --card-edge:#b9c1c9;  /* card border */
     --red:#c1121f;        /* hearts/diamonds */
-    --black:#0b0b0b;      /* spades/clubs (true black) */
+    --black:#0b0b0b;      /* spades/clubs true black */
 
     --chip-body:#d32f2f;  /* primary chip color */
     --chip-core:#fff4e6;
@@ -28,37 +27,29 @@
   }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;background:radial-gradient(1200px 700px at 15% 0%,#171b3a 0%,var(--bg) 60%);color:var(--ink);font:15px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;display:grid;place-items:center}
-  .wrap{width:min(98vw,1100px)}
+  body{margin:0;background:radial-gradient(1200px 700px at 15% 0%,#171b3a 0%,var(--bg) 60%);color:var(--ink);font:15px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;display:grid;grid-template-rows:auto 1fr auto;min-height:100vh}
+  .wrap{width:min(98vw,1100px);margin-inline:auto}
 
-  header{display:flex;justify-content:space-between;align-items:center;margin:10px 0 12px 0}
+  header{display:flex;justify-content:space-between;align-items:center;margin:10px 0 12px 0;padding-inline:8px}
   h1{font-size:18px;margin:0}
   .stats{display:flex;gap:10px;flex-wrap:wrap}
   .badge{background:var(--panel);border:1px solid #2a3159;padding:6px 10px;border-radius:999px;color:var(--muted)}
   .bold{font-weight:700;color:var(--ink)}
 
-  .table{position:relative;border-radius:24px;background:radial-gradient(1200px 600px at 60% -10%,#11694e 0%, var(--felt) 40%, var(--felt-dark) 100%);border:1px solid #0a2a22;padding:18px 18px 26px 18px;box-shadow:0 18px 60px rgba(0,0,0,.35) inset, 0 14px 34px rgba(0,0,0,.45);overflow:hidden}
+  .table{position:relative;border-radius:24px;background:radial-gradient(1200px 600px at 60% -10%,#11694e 0%, var(--felt) 40%, var(--felt-dark) 100%);border:1px solid #0a2a22;padding:18px;box-shadow:0 18px 60px rgba(0,0,0,.35) inset, 0 14px 34px rgba(0,0,0,.45);overflow:hidden}
   .rail{position:absolute; inset:8px; border-radius:20px; box-shadow: 0 0 0 4px var(--rail1) inset, 0 0 0 8px var(--rail2) inset; pointer-events:none}
 
-  .top-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
-  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .controls>*{background:var(--panel);color:var(--ink);border:1px solid #2a3159;padding:8px 10px;border-radius:10px}
-  .controls button{cursor:pointer}
-  .controls button:disabled{opacity:.5;cursor:not-allowed}
-
-  .layout{display:grid;grid-template-columns:1.1fr 220px;gap:16px;margin-top:12px}
-
+  .layout{display:grid;grid-template-columns:1.1fr 220px;gap:16px}
   .right{display:grid;gap:12px;align-content:start}
   .shoe,.tray{background:rgba(0,0,0,.25);border:1px solid #0d2520;border-radius:12px;padding:12px;min-height:110px;position:relative}
   .shoe::before{content:"Shoe";position:absolute;top:6px;left:10px;color:#cbd5e1;font-size:12px;opacity:.7}
   .tray::before{content:"Discard";position:absolute;top:6px;left:10px;color:#cbd5e1;font-size:12px;opacity:.7}
 
-  .stage{position:relative;min-height:420px;border:1px dashed rgba(0,0,0,.18);border-radius:12px;padding:10px}
+  .stage{position:relative;min-height:420px;border-radius:12px;padding:10px}
   .dealer{display:grid;justify-items:center;margin-top:4px;margin-bottom:14px}
   .dealer .label{font-weight:700;letter-spacing:.5px;margin-bottom:6px}
   .players{display:grid;gap:12px}
-  .hand{position:relative;background:rgba(0,0,0,.18);border:1px solid #0b2320;border-radius:12px;padding:10px;min-height:120px}
-  .hand.active{outline:2px solid var(--accent)}
+  .hand{position:relative;background:transparent;border:0;padding:10px;min-height:120px} /* no green outline */
   .hand .label{display:flex;align-items:center;gap:8px;margin-bottom:6px}
   .bet-circle{position:absolute;bottom:8px;left:8px;width:60px;height:60px;border-radius:50%;display:grid;place-items:center}
 
@@ -70,14 +61,22 @@
 
   .cards{position:relative;display:flex;gap:8px;flex-wrap:wrap;min-height:96px}
   .card{width:64px;height:88px;border-radius:10px;border:1px solid var(--card-edge);background:var(--card);display:grid;place-items:center;position:relative;box-shadow:0 6px 14px rgba(0,0,0,.25)}
+  .card.red .rank, .card.red .suit{color:var(--red)}
+  .card.black .rank, .card.black .suit{color:var(--black)}
   .rank{font-weight:800;font-size:20px}
   .suit{font-weight:800;font-size:20px;margin-left:2px}
-  .red{color:var(--red)}
-  .black{color:var(--black)}
   .back{background:repeating-linear-gradient(45deg,#162042 0 8px,#0e1537 8px 16px);border-color:#2b335f}
 
   .msg{margin-top:8px;color:#e5eef8}
   .hint{color:#cbd5e1;font-size:12px;margin-top:6px;opacity:.8}
+
+  /* Bottom action bar */
+  .bottom-bar{position:sticky;bottom:0;left:0;right:0;background:rgba(12,16,32,.9);backdrop-filter:blur(4px);border-top:1px solid #2a3159;padding:10px}
+  .actions{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+  .controls>*{background:var(--panel);color:var(--ink);border:1px solid #2a3159;padding:12px 16px;border-radius:12px;font-size:16px}
+  .controls button{cursor:pointer}
+  .controls button:disabled{opacity:.5;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -88,31 +87,15 @@
         <span class="badge">Bankroll: $<span id="bank" class="bold">1000</span></span>
         <span class="badge">Bet: $<span id="betDisp" class="bold">10</span></span>
         <span class="badge">Shoe: <span id="shoeLeft" class="bold">0</span></span>
-        <span class="badge">Rules: 3:2 BJ · S17 · Split · Double · Surrender</span>
       </div>
     </header>
 
     <div class="table">
       <div class="rail"></div>
-      <div class="top-row">
-        <div class="controls">
-          <label for="bet" class="badge">Bet</label>
-          <input id="bet" type="number" min="1" step="1" value="10" style="width:90px"/>
-          <button id="deal">Deal</button>
-          <button id="newShoe">New Shoe</button>
-          <button id="hit" disabled>Hit</button>
-          <button id="stand" disabled>Stand</button>
-          <button id="double" disabled>Double</button>
-          <button id="split" disabled>Split</button>
-          <button id="surrender" disabled>Surrender</button>
-        </div>
-        <div class="hint">One player hand. Split pairs. Double or surrender on first action. 600ms animations.</div>
-      </div>
-
       <div class="layout">
         <div class="stage">
           <div class="dealer">
-            <div class="label">Dealer <span id="dealerTotal" class="badge"></span></div>
+            <div class="label">Dealer • <span id="dealerCardCount" class="badge"></span></div>
             <div id="dealerCards" class="cards"></div>
           </div>
           <div id="players" class="players"></div>
@@ -122,6 +105,25 @@
           <div class="shoe" id="shoe"> </div>
           <div class="tray" id="tray"> </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="actions">
+      <div class="stats">
+        <span class="badge">Rules: 3:2 BJ · S17 · Split · Double · Surrender</span>
+        <label for="bet" class="badge">Bet</label>
+        <input id="bet" type="number" min="1" step="1" value="10" style="width:110px;background:var(--panel);color:var(--ink);border:1px solid #2a3159;border-radius:10px;padding:10px"/>
+      </div>
+      <div class="controls">
+        <button id="deal">Deal</button>
+        <button id="newShoe">New Shoe</button>
+        <button id="hit" disabled>Hit</button>
+        <button id="stand" disabled>Stand</button>
+        <button id="double" disabled>Double</button>
+        <button id="split" disabled>Split</button>
+        <button id="surrender" disabled>Surrender</button>
       </div>
     </div>
   </div>
@@ -146,7 +148,7 @@
   // UI refs
   const bankEl=$('bank'), betDisp=$('betDisp'), betInput=$('bet');
   const shoeLeftEl=$('shoeLeft');
-  const dealerCardsEl=$('dealerCards'), dealerTotalEl=$('dealerTotal');
+  const dealerCardsEl=$('dealerCards'), dealerCountEl=$('dealerCardCount');
   const playersEl=$('players'), msgEl=$('msg');
   const shoeEl=$('shoe');
   const dealBtn=$('deal'), newShoeBtn=$('newShoe'), hitBtn=$('hit'), standBtn=$('stand'), doubleBtn=$('double'), splitBtn=$('split'), surrenderBtn=$('surrender');
@@ -166,9 +168,9 @@
   // ===== Render =====
   function cardNode(face){
     const el = document.createElement('div');
-    el.className = 'card';
+    el.className = 'card ' + (isRed(face.suit)?'red':'black');
     const r = document.createElement('span'); r.className='rank'; r.textContent=face.rank;
-    const s = document.createElement('span'); s.className='suit ' + (isRed(face.suit)?'red':'black'); s.textContent=face.suit;
+    const s = document.createElement('span'); s.className='suit'; s.textContent=face.suit;
     el.appendChild(r); el.appendChild(s);
     return el;
   }
@@ -182,12 +184,12 @@
       if(holeDown){ dealerCardsEl.appendChild(backNode()); }
       else{ for(let i=1;i<dealer.length;i++) dealerCardsEl.appendChild(cardNode(dealer[i])); }
     }
-    dealerTotalEl.textContent = holeDown && dealer.length? String(handValue([dealer[0]]).total) + '+' : (dealer.length? String(handValue(dealer).total):'');
+    dealerCountEl.textContent = dealer.length + (holeDown? ' cards' : ' cards'); // always just card count
 
     // players (one seat, but may split)
     playersEl.innerHTML='';
     hands.forEach((h,i)=>{
-      const wrap=document.createElement('div'); wrap.className='hand'+(i===active?' active':'');
+      const wrap=document.createElement('div'); wrap.className='hand';
       const label=document.createElement('div'); label.className='label'; label.innerHTML = `<strong>Hand ${i+1}</strong> <span class="badge">${handValue(h.cards).total}</span>`;
       const cards=document.createElement('div'); cards.className='cards'; h.cards.forEach(c=>cards.appendChild(cardNode(c)));
       const betCircle=document.createElement('div'); betCircle.className='bet-circle'; betCircle.innerHTML = `<div class="chip"></div>`;
@@ -204,23 +206,24 @@
     const rf = shoeEl.getBoundingClientRect();
     const rt = toEl.getBoundingClientRect();
     const ghost = document.createElement('div');
-    ghost.className = 'card';
-    if(face){ ghost.appendChild(Object.assign(document.createElement('span'),{className:'rank',textContent:face.rank}));
-              ghost.appendChild(Object.assign(document.createElement('span'),{className:'suit ' + (isRed(face.suit)?'red':'black'),textContent:face.suit})); }
+    ghost.className = 'card ' + (face && face.suit ? (isRed(face.suit)?'red':'black') : '');
+    if(face && face.rank){
+      ghost.appendChild(Object.assign(document.createElement('span'),{className:'rank',textContent:face.rank}));
+      ghost.appendChild(Object.assign(document.createElement('span'),{className:'suit',textContent:face.suit}));
+    }
     ghost.style.position='fixed'; ghost.style.left=(rf.left+8)+'px'; ghost.style.top=(rf.top+8)+'px'; ghost.style.zIndex='9999';
     document.body.appendChild(ghost);
     const dx = rt.left - rf.left; const dy = rt.top - rf.top;
-    await ghost.animate([{transform:'translate(0,0) scale(0.92)'},{transform:`translate(${dx}px,${dy}px) scale(1)`}],{duration:DEAL_MS,easing:'cubic-bezier(.2,.8,.2,1)'}).finished;
+    await ghost.animate([{transform:'translate(0,0) scale(0.92)'},{transform:`translate(${dx}px,${dy}px) scale(1)`}],{duration:600,easing:'cubic-bezier(.2,.8,.2,1)'}).finished;
     ghost.remove();
   }
-
   async function flyChip(fromEl, toEl){
     const rf = fromEl.getBoundingClientRect();
     const rt = toEl.getBoundingClientRect();
     const chip = document.createElement('div'); chip.className='chip fly'; chip.style.left=(rf.left+6)+'px'; chip.style.top=(rf.top+6)+'px';
     document.body.appendChild(chip);
     const dx = rt.left - rf.left; const dy = rt.top - rf.top;
-    await chip.animate([{transform:'translate(0,0)'},{transform:`translate(${dx}px,${dy}px)`}],{duration:CHIP_MS,easing:'cubic-bezier(.2,.8,.2,1)'}).finished;
+    await chip.animate([{transform:'translate(0,0)'},{transform:`translate(${dx}px,${dy}px)`}],{duration:600,easing:'cubic-bezier(.2,.8,.2,1)'}).finished;
     chip.remove();
   }
 
@@ -255,23 +258,19 @@
     bankroll -= bet; hands=[{cards:[], bet, finished:false}]; dealer=[]; active=0; inRound=true; firstAction=true; holeDown=true; msg('');
     render();
 
-    // chip to bet circle
-    const bankBadge = bankEl.parentElement.parentElement; // the outer badge
-    await flyChip(bankBadge, playersEl); // to area; purely visual
+    // chip to bet circle (visual)
+    const bankBadge = bankEl.parentElement.parentElement; // outer badge
+    await flyChip(bankBadge, playersEl);
 
     // deal sequence: P, D, P, D(hole)
     const p0 = draw(), d0 = draw(), p1 = draw(), d1 = draw();
 
-    // deal player 1
     await flyCard(playersEl, p0); hands[0].cards.push(p0); render();
     await sleep(40);
-    // dealer up
     await flyCard(dealerCardsEl, d0); dealer.push(d0); render();
     await sleep(40);
-    // player 2
     await flyCard(playersEl, p1); hands[0].cards.push(p1); render();
     await sleep(40);
-    // dealer hole (fly a back)
     await flyCard(dealerCardsEl, {rank:'', suit:''}); dealer.push(d1); render();
 
     // Naturals
@@ -306,6 +305,12 @@
     holeDown=false; render(); await sleep(200);
     let hv = handValue(dealer);
     while(hv.total < 17){ const c=draw(); await flyCard(dealerCardsEl,c); dealer.push(c); render(); hv = handValue(dealer); }
+  }
+
+  async function finishRound(){
+    // used for naturals handling
+    await dealerPlay();
+    await settle();
   }
 
   async function settle(){
