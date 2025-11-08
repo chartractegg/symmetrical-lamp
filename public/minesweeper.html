@@ -197,6 +197,40 @@
         cell.el.addEventListener('mousedown', onMouseDown);
         cell.el.addEventListener('contextmenu', e => e.preventDefault());
         cell.el.addEventListener('dblclick', onChord);
+        // --- Mobile long-press flagging support ---
+let pressTimer;
+cell.el.addEventListener('touchstart', e => {
+  // prevent scrolling
+  e.preventDefault();
+  let isLong = false;
+  pressTimer = setTimeout(() => {
+    isLong = true;
+    toggleFlag(cell);
+    checkWin();
+  }, 450); // long press threshold (~0.45s)
+
+  const cancel = () => {
+    clearTimeout(pressTimer);
+    // If the press was short (tap), reveal
+    if (!isLong && alive) {
+      if (firstClick) {
+        placeMines(cell.r, cell.c);
+        firstClick = false;
+        startTimer();
+      }
+      if (!cell.flagged && !cell.revealed) {
+        reveal(cell);
+        drawCell(cell);
+        checkWin();
+      }
+    }
+  };
+
+  cell.el.addEventListener('touchend', cancel, {once: true});
+  cell.el.addEventListener('touchmove', cancel, {once: true});
+});
+
+        
         boardEl.appendChild(cell.el);
         row.push(cell);
       }
