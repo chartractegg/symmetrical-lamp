@@ -2,105 +2,52 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Snake — NOTKIA 3310 Edition</title>
+<title>Snake — Retro LCD Edition</title>
 <style>
   body {
-    background:#c0c0c0;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
+    background:#c0c0c0; /* Windows 98 silver */
     margin:0;
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     font-family:"Courier New",monospace;
   }
-
-  .phone {
-    position:relative;
-    background:#506d8b;
-    border-radius:60px/90px;
-    box-shadow:
-      inset 0 6px 0 #7894b0,
-      inset 0 -8px 0 #364c61,
-      0 10px 20px rgba(0,0,0,.4);
-    width:300px;
-    max-width:80vw;
-    aspect-ratio:300/600;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    padding:20px 0;
-  }
-
-  .logo {
-    font-weight:bold;
-    font-size:20px;
-    color:#f8f8f8;
-    text-shadow:0 1px 0 #222;
-    margin-bottom:10px;
-    font-family:"Verdana",sans-serif;
-    letter-spacing:2px;
-  }
-
   .screen {
-    width:80%;
-    flex:0 0 auto;
     background:#5a7751;
-    border-radius:15px;
     border:4px solid #3a4a3a;
-    box-shadow:inset 2px 2px 0 #7f9f7f,inset -2px -2px 0 #2f3f2f;
-    position:relative;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    box-shadow:
+      inset 2px 2px 0 #7f9f7f,
+      inset -2px -2px 0 #2f3f2f;
+    border-radius:10px;
+    width:75vw;
+    max-width:480px;
     aspect-ratio:3/4;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    touch-action:manipulation;
+    position:relative;
   }
-
   canvas {
+    background:#5a7751;
     width:95%;
     height:95%;
-    background:#5a7751;
     display:block;
   }
-
-  .keypad {
-    width:70%;
-    flex:1;
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    grid-gap:12px;
-    justify-items:center;
-    align-content:center;
-    margin-top:20px;
-  }
-
-  .btn {
-    width:42px;
-    height:42px;
-    background:#b8b8b8;
-    border-radius:50%;
-    box-shadow:inset 2px 2px 2px #fff,inset -2px -2px 3px #555;
-  }
-
   .score {
     position:absolute;
-    bottom:10px;
-    color:#fff;
+    bottom:8px;
+    right:10px;
+    color:#e0ffe0;
     font-size:14px;
   }
 </style>
 </head>
 <body>
 
-<div class="phone" id="phone">
-  <div class="logo">NOTKIA</div>
-  <div class="screen" id="screen">
-    <canvas id="game" width="240" height="320"></canvas>
-  </div>
-  <div class="keypad">
-    <div class="btn"></div><div class="btn"></div><div class="btn"></div>
-    <div class="btn"></div><div class="btn"></div><div class="btn"></div>
-    <div class="btn"></div><div class="btn"></div><div class="btn"></div>
-  </div>
+<div class="screen" id="screen">
+  <canvas id="game" width="240" height="320"></canvas>
   <div class="score">Score: <span id="score">0</span></div>
 </div>
 
@@ -123,6 +70,7 @@
     }
   });
 
+  // Touch quadrant controls
   screen.addEventListener('touchstart',e=>{
     const r=screen.getBoundingClientRect(),t=e.touches[0],
           x=t.clientX-r.left,y=t.clientY-r.top,
@@ -156,7 +104,7 @@
   }
   function drawGameOver(){
     ctx.fillStyle='#4a5f4a';ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle='#aaffaa';ctx.font=\"16px 'Courier New'\";
+    ctx.fillStyle='#aaffaa';ctx.font="16px 'Courier New'";
     ctx.fillText('GAME OVER',65,150);
     ctx.fillText('Tap or Enter',65,170);
     document.addEventListener('keydown',restartOnce,{once:true});
