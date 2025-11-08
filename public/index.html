@@ -1,125 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Playground — Symmetrical Lamp</title>
+<meta charset="UTF-8">
+<title>Symmetrical Lamp Web Arcade</title>
 <style>
-  :root{--bg:#0f1220;--panel:#14182b;--ink:#e6e8ef;--muted:#94a3b8;--line:#28314f;--accent:#66d9a3}
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{margin:0;display:grid;place-items:center;background:radial-gradient(1100px 600px at 10% 0%,#171a39 0%,#0f1220 60%);color:var(--ink);font:16px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
-  .wrap{width:min(96vw,900px);text-align:center;display:grid;gap:18px}
-  h1{font-size:22px;margin:0}
-  .lampBox{background:#0b1022;border:1px solid var(--line);border-radius:14px;padding:14px 10px;box-shadow:0 10px 30px rgba(0,0,0,.35) inset}
-  pre{margin:0;white-space:pre;line-height:1.05;letter-spacing:0.3px}
-  .glow{filter:drop-shadow(0 0 10px #ffd27a)}
-  .games{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;text-decoration:none;color:var(--ink);transition:transform .15s ease,border-color .15s ease;display:grid;gap:8px}
-  .card:hover{transform:translateY(-3px);border-color:var(--accent)}
-  .card h2{margin:0;font-size:18px}
-  .card p{margin:0;color:var(--muted);font-size:14px}
+  body {
+    background-color: #c0c0c0; /* Windows 98 silver */
+    color: #000000;
+    font-family: "Times New Roman", serif;
+    margin: 0;
+  }
+  a { color: #0000ee; text-decoration: underline; }
+  a:hover { color: #ff0000; }
+  table { margin: 60px auto; border-collapse: collapse; background: #f0f0f0; border: 2px outset #fff; }
+  td { padding: 20px 40px; text-align: center; }
+  h1 {
+    font-family: "Comic Sans MS", cursive;
+    font-size: 36px;
+    color: navy;
+    text-shadow: 1px 1px 0 #ffffff;
+  }
+  hr { border: 0; height: 2px; background: #808080; }
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 40px;
+    color: #333;
+  }
+  .marquee {
+    background: #000080;
+    color: #ffff00;
+    font-family: "Courier New", monospace;
+    padding: 6px;
+    margin-bottom: 10px;
+  }
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    border: 3px groove #ffffff;
+    padding: 20px;
+    background: #dcdcdc;
+    box-shadow: inset 2px 2px 0 #ffffff, inset -2px -2px 0 #808080;
+  }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>Symmetrical Lamp — Game Hub</h1>
-    <div class="lampBox">
-      <pre id="lamp" aria-label="ASCII lamp animation" class="glow"></pre>
-    </div>
 
-    <div class="games">
-      <a class="card" href="snake.html">
-        <h2>Snake</h2>
-        <p>Eat fruit. Don’t hit the wall or yourself.</p>
-      </a>
-      <a class="card" href="minesweeper.html">
-        <h2>Minesweeper</h2>
-        <p>Flag mines. Clear the grid.</p>
-      </a>
-      <a class="card" href="blackjack.html">
-        <h2>Blackjack</h2>
-        <p>6‑deck shoe. Split, double, surrender.</p>
-      </a>
-    </div>
-  </div>
+<div class="marquee">
+  <marquee behavior="scroll" direction="left" scrollamount="4">🌟 Welcome to the Symmetrical Lamp Web Arcade — The Future is Now (1998 Edition)! 🌟</marquee>
+</div>
 
-<script>
-(function(){
-  const frames = [
-`           _____________
-          /             \
-         /   SYMMETRIC   \
-        /_________________\
-             |  |  |          
-             |  |  |          
-        _____|  |  |_____
-       /                  \
-      /   ( )  ( )  ( )    \
-     /______________________\
-            |   |   |
-            |   |   |
-            |   |   |
-            |   |   |
-           _|___|___|_
-          |           |
-          |___________|`,
-`            _____________
-           /             \
-          /   SYMMETRIC   \
-         /_________________\
-              |  |  |          
-              |  |  |          
-         _____|  |  |_____
-        /                  \
-       /   ( )  ( )  ( )    \
-      /______________________\
-             |   |   |
-             |   |   |
-             |   |   |
-             |   |   |
-            _|___|___|_
-           |           |
-           |___________|`,
-`           _____________
-          /             \
-         /   SYMMETRIC   \
-        /_________________\
-             |  |  |          
-             |  |  |          
-        _____|  |  |_____
-       /   \\          // \
-      /    ( )  ( )  ( )  \
-     /______________________\
-            |   |   |
-            |   |   |
-            |   |   |
-            |   |   |
-           _|___|___|_
-          |           |
-          |___________|`,
-`           _____________
-          /             \
-         /   SYMMETRIC   \
-        /_________________\
-             |  |  |          
-             |  |  |          
-        _____|  |  |_____
-       /   \\          // \
-      /    (*)  ( )  (*)  \
-     /______________________\
-            |   |   |
-            |   |   |
-            |   |   |
-            |   |   |
-           _|___|___|_
-          |           |
-          |___________|`
-  ];
-  const pre = document.getElementById('lamp');
-  let i = 0; pre.textContent = frames[0];
-  setInterval(()=>{ i=(i+1)%frames.length; pre.textContent = frames[i]; }, 260);
-})();
-</script>
+<div class="container">
+  <h1>Symmetrical Lamp Web Arcade</h1>
+  <hr>
+  <p>Step into the internet of yesteryear — where frames ruled, tables reigned, and the future was <i>silver</i>.</p>
+
+  <table border="1">
+    <tr><td><a href="snake.html">🐍 Play Snake</a></td></tr>
+    <tr><td><a href="minesweeper.html">💣 Play Minesweeper</a></td></tr>
+    <tr><td><a href="blackjack.html">♠️ Play Blackjack</a></td></tr>
+  </table>
+
+  <p>Each game runs right in your browser — no plug-ins required! (Best viewed in Netscape Navigator 4.7)</p>
+</div>
+
+<div class="footer">
+  <hr>
+  <p>© 1998 Symmetrical Lamp Productions • All Rights Reserved<br>
+  <a href="mailto:webmaster@symmetricallamp.com">Contact the Webmaster</a></p>
+</div>
+
 </body>
 </html>
