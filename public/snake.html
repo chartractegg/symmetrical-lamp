@@ -2,203 +2,174 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Snake — Nokia 3310 Edition</title>
+<title>Snake — NOTKIA 3310 Edition</title>
 <style>
   body {
-    background-color: #c0c0c0;
-    font-family: "Courier New", monospace;
-    color: #000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
+    background:#c0c0c0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    margin:0;
+    font-family:"Courier New",monospace;
   }
-  pre.phone {
-    font-size: 12px;
-    line-height: 12px;
-    color: #000;
-    text-align: center;
-    white-space: pre;
-    margin-bottom: 8px;
+
+  .phone {
+    position:relative;
+    background:#506d8b;
+    border-radius:60px/90px;
+    box-shadow:
+      inset 0 6px 0 #7894b0,
+      inset 0 -8px 0 #364c61,
+      0 10px 20px rgba(0,0,0,.4);
+    width:300px;
+    max-width:80vw;
+    aspect-ratio:300/600;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:20px 0;
   }
+
+  .logo {
+    font-weight:bold;
+    font-size:20px;
+    color:#f8f8f8;
+    text-shadow:0 1px 0 #222;
+    margin-bottom:10px;
+    font-family:"Verdana",sans-serif;
+    letter-spacing:2px;
+  }
+
   .screen {
-    background-color: #5a7751;
-    width: 240px;
-    height: 320px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 4px solid #3a4a3a;
-    box-shadow: inset 2px 2px 0 #7f9f7f, inset -2px -2px 0 #2f3f2f;
-    touch-action: manipulation;
-    position: relative;
+    width:80%;
+    flex:0 0 auto;
+    background:#5a7751;
+    border-radius:15px;
+    border:4px solid #3a4a3a;
+    box-shadow:inset 2px 2px 0 #7f9f7f,inset -2px -2px 0 #2f3f2f;
+    position:relative;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    aspect-ratio:3/4;
   }
+
   canvas {
-    background-color: #5a7751;
-    display: block;
+    width:95%;
+    height:95%;
+    background:#5a7751;
+    display:block;
   }
+
+  .keypad {
+    width:70%;
+    flex:1;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    grid-gap:12px;
+    justify-items:center;
+    align-content:center;
+    margin-top:20px;
+  }
+
+  .btn {
+    width:42px;
+    height:42px;
+    background:#b8b8b8;
+    border-radius:50%;
+    box-shadow:inset 2px 2px 2px #fff,inset -2px -2px 3px #555;
+  }
+
   .score {
-    font-weight: bold;
-    font-size: 14px;
-    margin-top: 8px;
+    position:absolute;
+    bottom:10px;
+    color:#fff;
+    font-size:14px;
   }
 </style>
 </head>
 <body>
-<pre class="phone">
- ________________________________________
-|                                        |
-|    ┌──────────────────────────────┐    |
-|    │                              │    |
-|    │          NOKIA 3310          │    |
-|    │                              │    |
-|    └──────────────────────────────┘    |
-|                ________                |
-|               |        |               |
-|               | SCREEN |               |
-|               |________|               |
-|                                        |
-|________________________________________|
-</pre>
 
-<div class="screen" id="screen">
-  <canvas id="game" width="240" height="320"></canvas>
+<div class="phone" id="phone">
+  <div class="logo">NOTKIA</div>
+  <div class="screen" id="screen">
+    <canvas id="game" width="240" height="320"></canvas>
+  </div>
+  <div class="keypad">
+    <div class="btn"></div><div class="btn"></div><div class="btn"></div>
+    <div class="btn"></div><div class="btn"></div><div class="btn"></div>
+    <div class="btn"></div><div class="btn"></div><div class="btn"></div>
+  </div>
+  <div class="score">Score: <span id="score">0</span></div>
 </div>
-<div class="score">Score: <span id="score">0</span></div>
 
 <script>
 (() => {
-  const canvas = document.getElementById('game');
-  const ctx = canvas.getContext('2d');
-  const scoreEl = document.getElementById('score');
-  const screen = document.getElementById('screen');
-  const cellSize = 10;
-  const rows = canvas.height / cellSize;
-  const cols = canvas.width / cellSize;
-  
-  let snake = [{x: 12, y: 16}];
-  let dir = {x: 1, y: 0};
-  let apple = randomApple();
-  let score = 0;
-  let speed = 150;
-  let interval;
-  let pendingDir = null;
+  const canvas=document.getElementById('game');
+  const ctx=canvas.getContext('2d');
+  const scoreEl=document.getElementById('score');
+  const screen=document.getElementById('screen');
+  const cell=10, rows=canvas.height/cell, cols=canvas.width/cell;
+  let snake=[{x:12,y:16}],dir={x:1,y:0},apple=randomApple(),
+      score=0,speed=150,interval,pendingDir=null;
 
-  document.addEventListener('keydown', e => {
-    switch (e.key) {
-      case 'ArrowUp': case 'w': if (dir.y === 0) dir = {x:0,y:-1}; break;
-      case 'ArrowDown': case 's': if (dir.y === 0) dir = {x:0,y:1}; break;
-      case 'ArrowLeft': case 'a': if (dir.x === 0) dir = {x:-1,y:0}; break;
-      case 'ArrowRight': case 'd': if (dir.x === 0) dir = {x:1,y:0}; break;
+  document.addEventListener('keydown',e=>{
+    switch(e.key){
+      case'ArrowUp':case'w':if(dir.y===0)dir={x:0,y:-1};break;
+      case'ArrowDown':case's':if(dir.y===0)dir={x:0,y:1};break;
+      case'ArrowLeft':case'a':if(dir.x===0)dir={x:-1,y:0};break;
+      case'ArrowRight':case'd':if(dir.x===0)dir={x:1,y:0};break;
     }
   });
 
-  // Touch controls: detect tap quadrant
-  screen.addEventListener('touchstart', e => {
-    const rect = screen.getBoundingClientRect();
-    const touch = e.touches[0];
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
-    const w = rect.width;
-    const h = rect.height;
-    const centerX = w / 2;
-    const centerY = h / 2;
-    
-    // Determine direction by which quadrant was tapped
-    let newDir = {...dir};
-    const dx = x - centerX;
-    const dy = y - centerY;
-    const absX = Math.abs(dx);
-    const absY = Math.abs(dy);
-    if (absX > absY) {
-      // Horizontal tap
-      newDir = dx < 0 ? {x:-1, y:0} : {x:1, y:0};
-    } else {
-      // Vertical tap
-      newDir = dy < 0 ? {x:0, y:-1} : {x:0, y:1};
-    }
-
-    // Apply only if valid (not reversing directly)
-    if ((newDir.x !== -dir.x || newDir.y !== -dir.y) && pendingDir === null) {
-      pendingDir = newDir;
-    }
+  screen.addEventListener('touchstart',e=>{
+    const r=screen.getBoundingClientRect(),t=e.touches[0],
+          x=t.clientX-r.left,y=t.clientY-r.top,
+          w=r.width,h=r.height,cx=w/2,cy=h/2,
+          dx=x-cx,dy=y-cy,ax=Math.abs(dx),ay=Math.abs(dy);
+    let ndir={...dir};
+    if(ax>ay)ndir=dx<0?{x:-1,y:0}:{x:1,y:0};
+    else ndir=dy<0?{x:0,y:-1}:{x:0,y:1};
+    if((ndir.x!==-dir.x||ndir.y!==-dir.y)&&pendingDir===null)
+      pendingDir=ndir;
   });
 
-  function randomApple() {
-    return {
-      x: Math.floor(Math.random() * cols),
-      y: Math.floor(Math.random() * rows)
-    };
+  function randomApple(){
+    return{x:Math.floor(Math.random()*cols),y:Math.floor(Math.random()*rows)};
   }
-
-  function drawCell(x, y, color) {
-    ctx.fillStyle = color;
-    ctx.fillRect(x * cellSize, y * cellSize, cellSize - 1, cellSize - 1);
-  }
-
-  function loop() {
-    if (pendingDir) {
-      dir = pendingDir;
-      pendingDir = null;
-    }
-    const head = {
-      x: (snake[0].x + dir.x + cols) % cols,
-      y: (snake[0].y + dir.y + rows) % rows
-    };
-    if (snake.some(s => s.x === head.x && s.y === head.y)) {
-      clearInterval(interval);
-      ctx.fillStyle = '#4a5f4a';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#aaffaa';
-      ctx.font = "16px 'Courier New'";
-      ctx.fillText("GAME OVER", 65, 150);
-      ctx.fillText("Press Enter", 70, 170);
-      document.addEventListener('keydown', restartOnce, {once:true});
-      screen.addEventListener('touchstart', restartTouch, {once:true});
-      return;
+  function draw(x,y,c){ctx.fillStyle=c;ctx.fillRect(x*cell,y*cell,cell-1,cell-1);}
+  function loop(){
+    if(pendingDir){dir=pendingDir;pendingDir=null;}
+    const head={x:(snake[0].x+dir.x+cols)%cols,y:(snake[0].y+dir.y+rows)%rows};
+    if(snake.some(s=>s.x===head.x&&s.y===head.y)){
+      clearInterval(interval);drawGameOver();return;
     }
     snake.unshift(head);
-    if (head.x === apple.x && head.y === apple.y) {
-      score++;
-      scoreEl.textContent = score;
-      apple = randomApple();
-      if (speed > 60) {
-        clearInterval(interval);
-        speed -= 5;
-        interval = setInterval(loop, speed);
-      }
-    } else {
-      snake.pop();
-    }
-
-    ctx.fillStyle = '#5a7751';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    drawCell(apple.x, apple.y, '#aaffaa');
-    for (const s of snake) drawCell(s.x, s.y, '#003300');
+    if(head.x===apple.x&&head.y===apple.y){
+      score++;scoreEl.textContent=score;apple=randomApple();
+      if(speed>60){clearInterval(interval);speed-=5;interval=setInterval(loop,speed);}
+    }else snake.pop();
+    ctx.fillStyle='#5a7751';ctx.fillRect(0,0,canvas.width,canvas.height);
+    draw(apple.x,apple.y,'#aaffaa');
+    for(const s of snake)draw(s.x,s.y,'#003300');
   }
-
-  function restartOnce(e) {
-    if (e.key === 'Enter') startGame();
+  function drawGameOver(){
+    ctx.fillStyle='#4a5f4a';ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#aaffaa';ctx.font=\"16px 'Courier New'\";
+    ctx.fillText('GAME OVER',65,150);
+    ctx.fillText('Tap or Enter',65,170);
+    document.addEventListener('keydown',restartOnce,{once:true});
+    screen.addEventListener('touchstart',restartTouch,{once:true});
   }
-  function restartTouch() {
-    startGame();
+  function restartOnce(e){if(e.key==='Enter')start();}
+  function restartTouch(){start();}
+  function start(){
+    snake=[{x:12,y:16}];dir={x:1,y:0};apple=randomApple();
+    score=0;scoreEl.textContent=0;speed=150;pendingDir=null;
+    clearInterval(interval);interval=setInterval(loop,speed);
   }
-
-  function startGame() {
-    snake = [{x: 12, y: 16}];
-    dir = {x: 1, y: 0};
-    apple = randomApple();
-    score = 0;
-    scoreEl.textContent = 0;
-    speed = 150;
-    pendingDir = null;
-    clearInterval(interval);
-    interval = setInterval(loop, speed);
-  }
-
-  interval = setInterval(loop, speed);
+  interval=setInterval(loop,speed);
 })();
 </script>
 </body>
