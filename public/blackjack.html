@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Blackjack — Win98 Retro</title>
+<title>Blackjack — Win98 Retro (Animated)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   /* ===== Win98 look ===== */
@@ -23,7 +23,7 @@
     background:var(--win); border:2px solid var(--dark);
     box-shadow: inset -1px -1px 0 var(--shadow), inset 1px 1px 0 var(--light),
                 inset -2px -2px 0 var(--dark), inset 2px 2px 0 var(--mid);
-    padding:8px; width:min(96vw, 880px);
+    padding:8px; width:min(96vw, 920px);
   }
   .titlebar{
     background:linear-gradient(#000080,#0000a8); color:#fff; padding:3px 6px; margin-bottom:6px;
@@ -35,7 +35,6 @@
     padding:8px; background:var(--mid);
   }
 
-  /* header stats */
   .panel{
     display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:space-between;
     padding:6px; background:var(--mid);
@@ -47,8 +46,10 @@
     min-width:120px; text-align:center; font-weight:700; color:#111;
     background:#6b0000; color:#ff1a1a; font-family:"Courier New", monospace; letter-spacing:1px;
     padding:4px 8px; border:2px solid var(--dark);
-    box-shadow: inset 0 1px 0 #3d0000, inset 0 -1px 0 #3d0000, inset 1px 0 0 #3d0000, inset -1px 0 0 #3d0000;
+    box-shadow: inset 0 1px 0 #3d0000, inset 0 -1px 0 #3d0000,
+                inset 1px 0 0 #3d0000, inset -1px 0 0 #3d0000;
   }
+  .small{ font-size:12px; opacity:.85 }
   .label{font-weight:700; margin-right:4px}
   input[type=number]{
     width:90px; background:var(--win); border:2px solid var(--shadow); padding:2px 4px;
@@ -56,58 +57,86 @@
     font:14px/1 Tahoma, Arial;
   }
 
-  /* table area */
   .table{
-    display:grid; grid-template-columns: 1fr 220px; gap:8px;
+    display:grid; grid-template-columns: 1fr 230px; gap:8px;
   }
   .felt{
-    background:var(--felt); border-radius:8px; padding:8px;
+    background:var(--felt); border-radius:8px; padding:10px;
     border:2px solid var(--shadow);
     box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 #2f3f2f;
-    min-height:360px;
+    min-height:380px; position:relative;
   }
-  .dealer, .player{ background:rgba(255,255,255,0.06); padding:6px; border-radius:6px; }
-  .row{ display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start }
+
   .heading{ font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:6px }
   .tot{ background:#000; color:#ff1a1a; font-family:"Courier New", monospace; padding:2px 6px; border:2px inset #333 }
+
+  .area{ margin-bottom:10px }
+  .row{ display:flex; gap:10px; flex-wrap:wrap }
   .hand{
     background:rgba(255,255,255,0.08);
     border:2px solid var(--shadow);
     box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 var(--light);
-    padding:6px; border-radius:4px; min-width:220px;
+    padding:6px; border-radius:4px; min-width:230px; position:relative;
   }
-  .cards{ display:flex; gap:6px; flex-wrap:wrap; }
-  .card{
-    width:46px; height:64px; border:1px solid #999; background:#fff; display:grid; place-items:center;
-    font-weight:700; border-radius:2px; box-shadow:none;
-    font-family:"Courier New", monospace;
-  }
-  .back{ background:#d9d9d9; border-style:double; }
-  .red{ color:var(--red) } .black{ color:var(--black) }
+  .hand.active{ outline:2px dotted #000 }
+  .cards{ display:flex; gap:6px; flex-wrap:wrap; position:relative }
 
-  /* right column */
-  .side{
-    display:grid; gap:8px;
+  /* Retro cards + animations */
+  .card{
+    width:48px; height:64px; border:1px solid #999; background:#fff;
+    display:grid; place-items:center; font-weight:700; border-radius:2px;
+    font-family:"Courier New", monospace; color:#000; position:relative;
+    animation: slideIn 300ms ease-out both;
   }
+  .card.red{ color:var(--red) }
+  .back{ background:#d9d9d9; border-style:double; }
+
+  /* Fan-out feeling (staggered delay via data-i) */
+  .card[data-i]{ animation-delay: calc(var(--i, 0) * 60ms); }
+
+  @keyframes slideIn{
+    from{ transform: translate(-70px, -70px) rotate(-5deg); opacity:0.0; }
+    to  { transform: translate(0,0) rotate(0deg); opacity:1; }
+  }
+
+  /* Dealer hole flip */
+  .flip{
+    perspective: 600px;
+    width:48px; height:64px;
+  }
+  .flip .inner{
+    position:relative; width:100%; height:100%;
+    transform-style:preserve-3d; transition:transform 350ms ease;
+  }
+  .flip.revealed .inner{ transform: rotateY(180deg); }
+  .flip .face{
+    position:absolute; inset:0; display:grid; place-items:center;
+    backface-visibility:hidden; border:1px solid #999; border-radius:2px;
+  }
+  .flip .front{ background:#d9d9d9; } /* back pattern */
+  .flip .back {
+    background:#fff; transform: rotateY(180deg);
+    font-family:"Courier New", monospace; font-weight:700;
+  }
+  .flip .back.red{ color:var(--red) } .flip .back.black{ color:#000 }
+
+  /* Right column and buttons */
+  .side{ display:grid; gap:8px }
   .group{
     background:var(--mid);
     border:2px solid var(--shadow);
     box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 var(--light);
     padding:8px;
   }
-
-  /* buttons Win98 style */
   .buttons{ display:flex; gap:8px; flex-wrap:wrap }
   button{
     background:var(--win); border:2px solid var(--shadow); padding:6px 12px; cursor:pointer;
     box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 var(--light);
     font:14px/1 Tahoma, Arial;
   }
-  button:active{
-    box-shadow: inset -1px -1px 0 var(--light), inset 1px 1px 0 var(--dark);
-  }
-  button:disabled{ color:#666; }
-  .morewrap{ position:relative; }
+  button:active{ box-shadow: inset -1px -1px 0 var(--light), inset 1px 1px 0 var(--dark); }
+  button:disabled{ color:#666; cursor:not-allowed }
+  .morewrap{ position:relative }
   .moremenu{
     position:absolute; right:0; top:110%; min-width:180px; display:none; z-index:10;
     background:var(--win); border:2px solid var(--dark);
@@ -117,12 +146,8 @@
   .moremenu button:last-child{ border-bottom:none }
 
   .msg{ margin-top:6px; font-weight:700 }
-  .small{ font-size:12px; opacity:.8 }
 
-  /* mobile */
-  @media (max-width:820px){
-    .table{ grid-template-columns:1fr }
-  }
+  @media (max-width:820px){ .table{ grid-template-columns:1fr } }
 </style>
 </head>
 <body>
@@ -136,7 +161,7 @@
         <div class="badge">BANK $<span id="bank">1000</span></div>
         <div class="badge">BET $<span id="betDisp">10</span></div>
         <div class="badge">SHOE <span id="shoeLeft">0</span></div>
-        <div class="small">Rules: 3:2 Blackjack • Dealer stands on 17 • One seat (split allowed)</div>
+        <div class="small">3:2 blackjack • S17 • One seat (split supported)</div>
       </div>
       <div style="display:flex; gap:6px; align-items:center">
         <span class="label">Bet</span>
@@ -146,12 +171,12 @@
 
     <div class="table">
       <div class="felt">
-        <div class="dealer">
+        <div class="area">
           <div class="heading">DEALER <span class="tot" id="dealerTot"></span></div>
           <div class="cards" id="dealerCards"></div>
         </div>
         <hr style="border:0; height:2px; background:#2f3f2f; margin:8px 0">
-        <div class="player">
+        <div class="area">
           <div class="heading">PLAYER</div>
           <div id="hands" class="row"></div>
           <div class="msg" id="msg"></div>
@@ -176,7 +201,7 @@
         </div>
         <div class="group">
           <button id="newShoe">New 6-Deck Shoe</button>
-          <div class="small" style="margin-top:6px">Reshuffles automatically at 25% remaining.</div>
+          <div class="small" style="margin-top:6px">Auto reshuffle at ~25% remaining.</div>
         </div>
       </div>
     </div>
@@ -185,7 +210,7 @@
 
 <script>
 (function(){
-  // ===== State =====
+  // ====== Elements & State ======
   const $=id=>document.getElementById(id);
   const bankEl=$("bank"), betDisp=$("betDisp"), betInput=$("bet"), shoeLeft=$("shoeLeft");
   const dealerCardsEl=$("dealerCards"), dealerTotEl=$("dealerTot");
@@ -203,51 +228,94 @@
   let bankroll=1000, bet=10;
   let dealer=[], hands=[], active=0;
   let inRound=false, firstAction=true, holeDown=true;
+  let holeFlipEl = null; // ref to dealer flip element for animation
 
-  // ===== Shoe =====
-  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()* (i+1))|0; [a[i],a[j]]=[a[j],a[i]]; } }
+  // ====== Shoe ======
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]]; } }
   function freshShoe(){ shoe=[]; discard=[]; for(let d=0; d<DECKS; d++){ for(const s of SUITS){ for(const r of RANKS){ shoe.push({rank:r,suit:s}); }}} shuffle(shoe); updateShoe(); msg("New shoe ready."); }
   function updateShoe(){ shoeLeft.textContent = shoe.length; }
   function draw(){ if(!shoe.length) freshShoe(); const c=shoe.pop(); updateShoe(); return c; }
   function ensurePen(){ if(shoe.length < 52*DECKS*(1-CUT)) freshShoe(); }
 
-  // ===== Values =====
+  // ====== Values ======
   const isRed = s => (s==="♥"||s==="♦");
   function val(r){ if(r==="A")return 11; if(["10","J","Q","K"].includes(r)) return 10; return parseInt(r,10); }
   function handTotal(cards){ let t=0, aces=0; for(const c of cards){ t+=val(c.rank); if(c.rank==="A") aces++; } while(t>21 && aces>0){ t-=10; aces--; } return t; }
   function visibleDealer(){ return holeDown ? handTotal([dealer[0]]) : handTotal(dealer); }
   function sameValue(a,b){ return val(a.rank)===val(b.rank); }
 
-  // ===== Render =====
-  function cardNode(c,back=false){
+  // ====== Render ======
+  function makeCardEl(c, iIndex){
     const el=document.createElement("div");
-    el.className="card"+(back?" back":"")+" "+(isRed(c?.suit)?"red":"black");
-    el.textContent = back ? "" : (c.rank + (c.rank==="10"?"":(isRed(c.suit)?"♥♦".includes(c.suit)?c.suit:c.suit:c.suit)));
-    if(!back){ el.textContent = c.rank + c.suit; }
+    el.className="card " + (isRed(c.suit)?"red":"black");
+    el.textContent = c.rank + c.suit;
+    if(iIndex!=null){ el.dataset.i = iIndex; el.style.setProperty('--i', iIndex); }
     return el;
   }
-  function render(){
-    // Dealer
-    dealerCardsEl.innerHTML="";
-    if(dealer.length){
-      dealerCardsEl.appendChild(cardNode(dealer[0]));
-      if(holeDown) dealerCardsEl.appendChild(cardNode({},true));
-      else for(let i=1;i<dealer.length;i++) dealerCardsEl.appendChild(cardNode(dealer[i]));
-    }
-    dealerTotEl.textContent = visibleDealer();
+  function makeBackEl(iIndex){
+    const el=document.createElement("div");
+    el.className="card back";
+    if(iIndex!=null){ el.dataset.i = iIndex; el.style.setProperty('--i', iIndex); }
+    return el;
+  }
 
-    // Player hands
+  function renderDealer(){
+    dealerCardsEl.innerHTML="";
+    holeFlipEl = null;
+
+    if(!dealer.length){ dealerTotEl.textContent=""; return; }
+
+    // Up card
+    const up = makeCardEl(dealer[0], 0);
+    dealerCardsEl.appendChild(up);
+
+    // Hole: flip container when hidden
+    if(holeDown){
+      const flip=document.createElement('div');
+      flip.className='flip';
+      const inner=document.createElement('div'); inner.className='inner';
+      const front=document.createElement('div'); front.className='face front'; // back face
+      const back=document.createElement('div');  // actual card face (hidden until flip)
+      back.className='face back ' + (isRed(dealer[1].suit)?'red':'black');
+      back.textContent = dealer[1].rank + dealer[1].suit;
+      inner.appendChild(front); inner.appendChild(back);
+      flip.appendChild(inner);
+      holeFlipEl = flip; // save to flip later
+      dealerCardsEl.appendChild(flip);
+      // any subsequent dealer cards (if already revealed during render pass)
+      for(let i=2;i<dealer.length;i++){
+        const el=makeCardEl(dealer[i], i); dealerCardsEl.appendChild(el);
+      }
+    }else{
+      for(let i=1;i<dealer.length;i++){
+        const el=makeCardEl(dealer[i], i); dealerCardsEl.appendChild(el);
+      }
+    }
+
+    dealerTotEl.textContent = visibleDealer();
+  }
+
+  function renderHands(){
     handsEl.innerHTML="";
     hands.forEach((h,i)=>{
-      const wrap=document.createElement("div"); wrap.className="hand"; if(i===active && inRound){ wrap.style.outline="2px dotted #000"; }
-      const head=document.createElement("div"); head.className="heading"; head.innerHTML=`HAND ${i+1} <span class="tot">${handTotal(h.cards)}</span>`;
-      const cards=document.createElement("div"); cards.className="cards";
-      h.cards.forEach(c=>cards.appendChild(cardNode(c)));
+      const wrap=document.createElement("div");
+      wrap.className="hand" + ((i===active && inRound)?' active':'');
+      const head=document.createElement("div");
+      head.className="heading";
+      head.innerHTML=`HAND ${i+1} <span class="tot">${handTotal(h.cards)}</span>`;
+      const cards=document.createElement("div");
+      cards.className="cards";
+      h.cards.forEach((c,idx)=>cards.appendChild(makeCardEl(c, idx)));
       wrap.appendChild(head); wrap.appendChild(cards); handsEl.appendChild(wrap);
       h._els={wrap,cards};
     });
+  }
 
+  function render(){
+    renderDealer();
+    renderHands();
     bankEl.textContent=bankroll; betDisp.textContent=bet;
+
     // Buttons
     if(!inRound){
       dealBtn.disabled=false; hitBtn.disabled=true; standBtn.disabled=true;
@@ -262,7 +330,7 @@
   }
   function msg(t=""){ msgEl.textContent=t; }
 
-  // ===== Flow =====
+  // ====== Flow ======
   function startRound(){
     bet = Math.max(1, Math.floor(Number(betInput.value||10)));
     if(bet>bankroll){ msg("Bet exceeds bankroll."); return; }
@@ -270,13 +338,16 @@
     bankroll -= bet;
     dealer=[]; hands=[{cards:[], bet:bet, done:false}]; active=0;
     inRound=true; firstAction=true; holeDown=true; msg("");
-    // deal: P D P D(hole)
+
+    // Deal fan-out: P D P D(hole)
     hands[0].cards.push(draw());
     dealer.push(draw());
     hands[0].cards.push(draw());
     dealer.push(draw());
-    // naturals
-    if(handTotal(hands[0].cards)===21 || (["A","10","J","Q","K"].includes(dealer[0].rank) && handTotal(dealer)===21)){
+
+    // Naturals check (peek only matters if dealer up is A/10)
+    if(handTotal(hands[0].cards)===21 ||
+       (["A","10","J","Q","K"].includes(dealer[0].rank) && handTotal(dealer)===21)){
       finishRound(); return;
     }
     render();
@@ -315,27 +386,54 @@
   function surrender(){
     const h=current(); if(!firstAction) return;
     bankroll += Math.floor(h.bet/2);
-    // hand ends immediately
     h.done=true;
-    // if it was the only hand, end round
     if(hands.length===1){ inRound=false; msg("Surrender."); render(); return; }
     nextHand();
   }
 
   function nextHand(){
     current().done=true; firstAction=true; active++;
-    if(active>=hands.length){ dealerPlay(); settle(); }
+    if(active>=hands.length){ dealerPlay(); }
     else { render(); }
   }
 
+  // Dealer logic with flip animation
   function dealerPlay(){
-    holeDown=false; render();
-    while(handTotal(dealer) < 17){ dealer.push(draw()); render(); }
+    // Flip the hole card first with animation
+    holeDown=false;
+    if(holeFlipEl){
+      // Turn existing flip to revealed; after CSS finishes, continue drawing
+      holeFlipEl.classList.add('revealed');
+      setTimeout(()=>{ continueDealer(); }, 360); // slightly > CSS 350ms
+    }else{
+      continueDealer();
+    }
+  }
+
+  function continueDealer(){
+    render(); // re-render with real fronts (and to update total)
+    // Draw to 17 (S17)
+    const step = () => {
+      const t = handTotal(dealer);
+      if(t < 17){
+        dealer.push(draw()); render();
+        setTimeout(step, 320); // small pause between dealer draws
+      }else{
+        settle();
+      }
+    };
+    setTimeout(step, 150);
   }
 
   function finishRound(){
-    // reveal and settle immediately for naturals
-    holeDown=false; render(); settle();
+    // Reveal immediately, then settle (use flip if present)
+    holeDown=false;
+    if(holeFlipEl){
+      holeFlipEl.classList.add('revealed');
+      setTimeout(()=>{ render(); settle(); }, 360);
+    }else{
+      render(); settle();
+    }
   }
 
   function settle(){
@@ -361,7 +459,7 @@
     msg(net>0?`You won $${net}`:(net===0?`Push`:`You lose`));
   }
 
-  // ===== Wire-up =====
+  // ====== Wire-up ======
   dealBtn.addEventListener("click", startRound);
   hitBtn.addEventListener("click", hit);
   standBtn.addEventListener("click", stand);
@@ -372,11 +470,12 @@
 
   betInput.addEventListener("change", ()=>{ bet=Math.max(1,Math.floor(Number(betInput.value)||10)); betInput.value=bet; betDisp.textContent=bet; });
 
-  moreBtn.addEventListener("click", ()=>{
+  moreBtn.addEventListener("click", (e)=>{
+    e.stopPropagation();
     moreMenu.style.display = (moreMenu.style.display==="block"?"none":"block");
   });
-  document.addEventListener("click", (e)=>{
-    if(!moreMenu.contains(e.target) && e.target!==moreBtn){ moreMenu.style.display="none"; }
+  document.addEventListener("click", ()=>{
+    moreMenu.style.display="none";
   });
 
   // boot
