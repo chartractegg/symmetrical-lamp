@@ -89,19 +89,23 @@
   .hand.active{ outline:2px dotted #000 }
   .cards{ display:flex; gap:6px; flex-wrap:wrap }
 
-  /* cards */
+  /* base cards (no animation by default) */
   .card{
     width:48px; height:64px;
     border:1px solid #999; border-radius:2px;
     background:#fff; display:grid; place-items:center;
     font-family:"Courier New", monospace; font-weight:700; color:#000;
-    animation:dealIn 260ms ease-out both;
   }
   .card.red{ color:var(--red); }
-  .back{ background:#d9d9d9; border-style:double; }
+  .card.back{ background:#d9d9d9; border-style:double; }
 
-  /* fan-out via index variable */
-  .card[data-i]{ animation-delay: calc(var(--i, 0) * 60ms); }
+  /* animated deal card */
+  .card.deal{
+    animation:dealIn 260ms ease-out both;
+  }
+  .card.deal[data-i]{
+    animation-delay: calc(var(--i, 0) * 0.18s); /* more delay between sequence cards */
+  }
 
   @keyframes dealIn{
     from{ transform:translate(-60px,-50px) rotate(-4deg); opacity:0; }
@@ -232,13 +236,14 @@
   let shoe = [], discard = [];
   let bankroll = 1000, bet = 10;
 
-  let dealer = [];          // [{rank,suit}]
-  let hands = [];           // [{cards:[], bet, done:false}]
+  let dealer = [];
+  let hands = [];
   let active = 0;
   let inRound = false;
   let firstAction = false;
   let holeDown = true;
   let justRevealedHole = false;
+  let dealSeq = 0; // animation order index per round
 
   function shuffle(a){
     for(let i=a.length-1;i>0;i--){
@@ -288,23 +293,23 @@
   }
   function sameValue(a,b){ return val(a.rank)===val(b.rank); }
 
-  function cardEl(card, idx, extraClass){
+  function cardEl(card){
     const el = document.createElement("div");
-    el.className = "card" + (isRed(card.suit) ? " red" : "") + (extraClass ? " "+extraClass : "");
+    let cls = "card";
+    if(isRed(card.suit)) cls += " red";
+    if(card._animateOnce) cls += " deal";
+    el.className = cls;
     el.textContent = card.rank + card.suit;
-    if(typeof idx==="number"){
+    if(card._animateOnce && typeof card._order==="number"){
+      const idx = Math.max(0, Math.min(card._order, 4));
       el.dataset.i = idx;
       el.style.setProperty("--i", idx);
     }
     return el;
   }
-  function backEl(idx){
+  function backEl(){
     const el = document.createElement("div");
     el.className = "card back";
-    if(typeof idx==="number"){
-      el.dataset.i = idx;
-      el.style.setProperty("--i", idx);
-    }
     return el;
   }
 
@@ -312,10 +317,13 @@
     dealerCardsEl.innerHTML = "";
     dealer.forEach((c,i)=>{
       if(i===1 && holeDown){
-        dealerCardsEl.appendChild(backEl(i));
+        dealerCardsEl.appendChild(backEl());
       }else{
-        const extra = (!holeDown && i===1 && justRevealedHole) ? "flip-reveal" : "";
-        dealerCardsEl.appendChild(cardEl(c,i,extra));
+        const el = cardEl(c);
+        if(!holeDown && i===1 && justRevealedHole){
+          el.classList.add("flip-reveal");
+        }
+        dealerCardsEl.appendChild(el);
       }
     });
     dealerTotEl.textContent = visibleDealer();
@@ -328,13 +336,10 @@
       wrap.className = "hand" + ((inRound && i===active) ? " active" : "");
       const head = document.createElement("div");
       head.className = "heading";
-      const totSpan = `<span class="tot">${total(h.cards)}</span>`;
-      head.innerHTML = `HAND ${i+1} ${totSpan}`;
+      head.innerHTML = `HAND ${i+1} <span class="tot">${total(h.cards)}</span>`;
       const cardsDiv = document.createElement("div");
       cardsDiv.className = "cards";
-      h.cards.forEach((c,idx)=>{
-        cardsDiv.appendChild(cardEl(c, idx));
-      });
+      h.cards.forEach(c => cardsDiv.appendChild(cardEl(c)));
       wrap.appendChild(head);
       wrap.appendChild(cardsDiv);
       handsEl.appendChild(wrap);
@@ -355,20 +360,34 @@
       hitBtn.disabled = false;
       standBtn.disabled = false;
       const canD = firstAction && bankroll >= h.bet;
-      const canS = firstAction && h.cards.length===2 && bankroll >= h.bet && sameValue(h.cards[0],h.cards[1]);
+      const canS = firstAction && h.cards.length===2 && bankroll>=h.bet && sameValue(h.cards[0],h.cards[1]);
       doubleBtn.disabled = !canD;
       splitBtn.disabled = !canS;
       surrenderBtn.disabled = !firstAction;
     }
   }
 
-  function render(){
-    renderDealer();
-    renderHands();
+  function clearAnimationFlags(){
+    hands.forEach(h=>h.cards.forEach(c=>{ if(c._animateOnce) c._animateOnce=false; }));
+    dealer.forEach(c=>{ if(c._animateOnce) c._animateOnce=false; });
+  }
+
+  function renderHUD(){
     bankEl.textContent = bankroll;
     betDisp.textContent = bet;
     setButtons();
-    justRevealedHole = false; // one-shot flag
+    justRevealedHole = false;
+    clearAnimationFlags();
+  }
+
+  function renderAll(){
+    renderDealer();
+    renderHands();
+    renderHUD();
+  }
+  function renderHandsOnly(){
+    renderHands();
+    renderHUD();
   }
 
   function msg(t){ msgEl.textContent = t || ""; }
@@ -384,7 +403,6 @@
     }
     ensurePen();
     bankroll -= bet;
-
     dealer = [];
     hands = [{cards:[], bet, done:false}];
     active = 0;
@@ -392,51 +410,54 @@
     firstAction = true;
     holeDown = true;
     justRevealedHole = false;
+    dealSeq = 0;
     msg("");
 
     // initial deal: P D P D
-    hands[0].cards.push(draw());
-    dealer.push(draw());
-    hands[0].cards.push(draw());
-    dealer.push(draw());
+    let c;
+    c = draw(); c._animateOnce=true; c._order = dealSeq++; hands[0].cards.push(c);
+    c = draw(); c._animateOnce=true; c._order = dealSeq++; dealer.push(c);
+    c = draw(); c._animateOnce=true; c._order = dealSeq++; hands[0].cards.push(c);
+    c = draw(); c._animateOnce=true; c._order = dealSeq++; dealer.push(c);
 
-    // naturals check
+    renderAll();
+
     const pTot = total(hands[0].cards);
     const dTot = total(dealer);
     const playerBJ = (pTot===21 && hands[0].cards.length===2);
     const dealerBJ = (dTot===21 && dealer.length===2);
 
     if(playerBJ || dealerBJ){
-      holeDown = false;
-      justRevealedHole = true;
       resolveNaturals(playerBJ, dealerBJ);
-      return;
     }
-
-    render();
   }
 
   function resolveNaturals(playerBJ, dealerBJ){
+    holeDown = false;
+    justRevealedHole = true;
+
     let outcome = "";
     let net = 0;
+    const b = hands[0].bet;
+
     if(playerBJ && dealerBJ){
-      bankroll += hands[0].bet; // push: return bet
-      outcome = "Push (both blackjack)";
+      bankroll += b;
+      outcome = "Push (both blackjack).";
     }else if(playerBJ){
-      const pay = hands[0].bet * 2.5; // bet + 3:2
+      const pay = b*2.5;
       bankroll += pay;
-      net = pay - hands[0].bet;
+      net = pay - b;
       outcome = "Blackjack!";
     }else if(dealerBJ){
-      outcome = "Dealer blackjack";
+      outcome = "Dealer blackjack.";
     }
     inRound = false;
-    render();
-    msg(net>0 ? `${outcome} You win $${net.toFixed(0)}.` : outcome);
+    renderAll();
+    if(net>0) msg(`${outcome} You win $${net.toFixed(0)}.`);
+    else msg(outcome);
   }
 
   function nextStep(){
-    // find next unfinished hand
     let next = -1;
     for(let i=active+1;i<hands.length;i++){
       if(!hands[i].done){ next = i; break; }
@@ -444,9 +465,8 @@
     if(next !== -1){
       active = next;
       firstAction = true;
-      render();
+      renderHandsOnly();
     }else{
-      // dealer plays
       dealerPlay();
     }
   }
@@ -454,13 +474,15 @@
   function dealerPlay(){
     holeDown = false;
     justRevealedHole = true;
-    // reveal first
-    render();
-    // draw to 17
+    renderAll();
+
     while(total(dealer) < 17){
-      dealer.push(draw());
+      const c = draw();
+      c._animateOnce = true;
+      c._order = dealer.length;
+      dealer.push(c);
+      renderAll();
     }
-    render();
     settleRound();
   }
 
@@ -469,8 +491,9 @@
     let net = 0;
     for(const h of hands){
       const pTot = total(h.cards);
-      const playerBJ = (pTot===21 && h.cards.length===2); // after split, still counts
+      const playerBJ = (pTot===21 && h.cards.length===2);
       let result = "lose";
+
       if(pTot>21){
         result = "lose";
       }else if(dTot>21){
@@ -494,23 +517,27 @@
       }else if(result==="win"){
         const pay = h.bet*2;
         bankroll += pay;
-        net += pay - h.bet;
+        net += h.bet;
       }else if(result==="push"){
         bankroll += h.bet;
       }
     }
     inRound = false;
-    render();
-    msg(net>0 ? `You win $${net.toFixed(0)}.` : (net<0 ? "You lose." : "Push."));
+    renderAll();
+    if(net>0) msg(`You win $${net.toFixed(0)}.`);
+    else if(net<0) msg("You lose.");
+    else msg("Push.");
   }
 
-  // Actions
   function doHit(){
     if(!inRound) return;
     const h = currentHand();
-    h.cards.push(draw());
+    const c = draw();
+    c._animateOnce = true;
+    c._order = h.cards.length;
+    h.cards.push(c);
     firstAction = false;
-    render();
+    renderHandsOnly();
     if(total(h.cards)>21){
       h.done = true;
       nextStep();
@@ -531,14 +558,16 @@
     if(!firstAction || bankroll < h.bet) return;
     bankroll -= h.bet;
     h.bet *= 2;
-    h.cards.push(draw());
+    const c = draw();
+    c._animateOnce = true;
+    c._order = h.cards.length;
+    h.cards.push(c);
     firstAction = false;
-    render();
+    renderHandsOnly();
+    h.done = true;
     if(total(h.cards)>21){
-      h.done = true;
       nextStep();
     }else{
-      h.done = true;
       nextStep();
     }
   }
@@ -556,16 +585,19 @@
     const newHands = [];
     for(let i=0;i<hands.length;i++){
       if(i===active){
-        newHands.push({cards:[c1, draw()], bet:h.bet, done:false});
-        newHands.push({cards:[c2, draw()], bet:h.bet, done:false});
+        let c;
+        c = draw(); c._animateOnce=true; c._order=0;
+        newHands.push({cards:[c1, c], bet:h.bet, done:false});
+        c = draw(); c._animateOnce=true; c._order=0;
+        newHands.push({cards:[c2, c], bet:h.bet, done:false});
       }else{
         newHands.push(hands[i]);
       }
     }
     hands = newHands;
-    active = active; // play first split hand
+    active = active;
     firstAction = true;
-    render();
+    renderHandsOnly();
   }
 
   function doSurrender(){
@@ -574,11 +606,10 @@
     if(!firstAction) return;
     bankroll += Math.floor(h.bet/2);
     h.done = true;
-    // if only hand, end immediately
-    let anyActive = hands.some(x=>!x.done);
-    if(!anyActive){
-      inRound = false;
-      render();
+    const any = hands.some(x=>!x.done);
+    if(!any){
+      inRound=false;
+      renderAll();
       msg("Surrender.");
     }else{
       nextStep();
@@ -592,7 +623,7 @@
   doubleBtn.addEventListener("click", doDouble);
   splitBtn.addEventListener("click", doSplit);
   surrenderBtn.addEventListener("click", doSurrender);
-  newShoeBtn.addEventListener("click", ()=>{ if(!inRound){ freshShoe(); render(); } });
+  newShoeBtn.addEventListener("click", ()=>{ if(!inRound){ freshShoe(); renderAll(); } });
 
   betInput.addEventListener("change", ()=>{
     bet = Math.max(1, Math.floor(Number(betInput.value)||10));
@@ -610,7 +641,7 @@
 
   // boot
   freshShoe();
-  render();
+  renderAll();
 })();
 </script>
 </body>
