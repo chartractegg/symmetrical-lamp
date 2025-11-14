@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Blackjack — Win98 Retro (Fixed + Animated)</title>
+<title>Blackjack — Win98 Retro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   :root{
@@ -16,6 +16,7 @@
     font:14px/1 Tahoma, Verdana, Arial, sans-serif;
     display:flex; align-items:center; justify-content:center;
   }
+
   .window{
     background:var(--win); border:2px solid var(--dark);
     box-shadow: inset -1px -1px 0 var(--shadow), inset 1px 1px 0 var(--light),
@@ -23,8 +24,10 @@
     padding:8px; width:min(96vw, 940px);
   }
   .titlebar{
-    background:linear-gradient(#000080,#0000a8); color:#fff; padding:3px 6px; margin-bottom:6px;
-    display:flex; justify-content:space-between; align-items:center; font-weight:700;
+    background:linear-gradient(#000080,#0000a8); color:#fff;
+    padding:3px 6px; margin-bottom:6px;
+    display:flex; justify-content:space-between; align-items:center;
+    font-weight:700;
   }
   .frame{
     border:2px solid var(--shadow);
@@ -33,7 +36,8 @@
   }
 
   .panel{
-    display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:space-between;
+    display:flex; gap:8px; flex-wrap:wrap;
+    align-items:center; justify-content:space-between;
     padding:6px; background:var(--mid);
     border:2px solid var(--shadow);
     box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 var(--light);
@@ -41,7 +45,8 @@
   }
   .badge{
     min-width:120px; text-align:center; font-weight:700;
-    background:#6b0000; color:#ff1a1a; font-family:"Courier New", monospace; letter-spacing:1px;
+    background:#6b0000; color:#ff1a1a;
+    font-family:"Courier New", monospace; letter-spacing:1px;
     padding:4px 8px; border:2px solid var(--dark);
     box-shadow: inset 0 1px 0 #3d0000, inset 0 -1px 0 #3d0000,
                 inset 1px 0 0 #3d0000, inset -1px 0 0 #3d0000;
@@ -54,53 +59,64 @@
     font:14px/1 Tahoma, Arial;
   }
 
-  .table{ display:grid; grid-template-columns: 1fr 230px; gap:8px }
+  .table{ display:grid; grid-template-columns:1fr 230px; gap:8px }
   .felt{
     background:var(--felt); border-radius:8px; padding:10px;
     border:2px solid var(--shadow);
     box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 #2f3f2f;
-    min-height:380px; position:relative;
+    min-height:380px;
   }
+
   .area{ margin-bottom:10px }
-  .heading{ font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:6px }
-  .tot{ background:#000; color:#ff1a1a; font-family:"Courier New", monospace; padding:2px 6px; border:2px inset #333 }
+  .heading{
+    font-weight:700; margin-bottom:4px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .tot{
+    background:#000; color:#ff1a1a;
+    font-family:"Courier New", monospace;
+    padding:2px 6px; border:2px inset #333;
+    min-width:24px; text-align:center;
+  }
 
   .row{ display:flex; gap:10px; flex-wrap:wrap }
   .hand{
     background:rgba(255,255,255,0.08);
     border:2px solid var(--shadow);
     box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 var(--light);
-    padding:6px; border-radius:4px; min-width:230px; position:relative;
+    padding:6px; border-radius:4px; min-width:230px;
   }
   .hand.active{ outline:2px dotted #000 }
-  .cards{ display:flex; gap:6px; flex-wrap:wrap; position:relative }
+  .cards{ display:flex; gap:6px; flex-wrap:wrap }
 
-  /* Retro cards + animations */
+  /* cards */
   .card{
-    width:48px; height:64px; border:1px solid #999; background:#fff;
-    display:grid; place-items:center; font-weight:700; border-radius:2px;
-    font-family:"Courier New", monospace; color:#000; position:relative;
-    animation: slideIn 300ms ease-out both;
+    width:48px; height:64px;
+    border:1px solid #999; border-radius:2px;
+    background:#fff; display:grid; place-items:center;
+    font-family:"Courier New", monospace; font-weight:700; color:#000;
+    animation:dealIn 260ms ease-out both;
   }
-  .card.red{ color:var(--red) }
+  .card.red{ color:var(--red); }
   .back{ background:#d9d9d9; border-style:double; }
 
+  /* fan-out via index variable */
   .card[data-i]{ animation-delay: calc(var(--i, 0) * 60ms); }
-  @keyframes slideIn{
-    from{ transform: translate(-70px, -70px) rotate(-5deg); opacity:0.0; }
-    to  { transform: translate(0,0) rotate(0deg); opacity:1; }
+
+  @keyframes dealIn{
+    from{ transform:translate(-60px,-50px) rotate(-4deg); opacity:0; }
+    to{ transform:translate(0,0) rotate(0deg); opacity:1; }
   }
 
-  .flip{ perspective:600px; width:48px; height:64px }
-  .flip .inner{ position:relative; width:100%; height:100%;
-    transform-style:preserve-3d; transition:transform 350ms ease; }
-  .flip.revealed .inner{ transform: rotateY(180deg); }
-  .flip .face{ position:absolute; inset:0; display:grid; place-items:center;
-    backface-visibility:hidden; border:1px solid #999; border-radius:2px;}
-  .flip .front{ background:#d9d9d9; }
-  .flip .back{ background:#fff; transform: rotateY(180deg);
-    font-family:"Courier New", monospace; font-weight:700; }
-  .flip .back.red{ color:var(--red) } .flip .back.black{ color:#000 }
+  /* flip reveal for dealer hole */
+  .flip-reveal{
+    animation:flipReveal 320ms ease-out both;
+    transform-origin:center;
+  }
+  @keyframes flipReveal{
+    0%{ transform:scaleX(0); }
+    100%{ transform:scaleX(1); }
+  }
 
   .side{ display:grid; gap:8px }
   .group{
@@ -117,16 +133,26 @@
   }
   button:active{ box-shadow: inset -1px -1px 0 var(--light), inset 1px 1px 0 var(--dark); }
   button:disabled{ color:#666; cursor:not-allowed }
+
   .morewrap{ position:relative }
   .moremenu{
     position:absolute; right:0; top:110%; min-width:180px; display:none; z-index:10;
     background:var(--win); border:2px solid var(--dark);
-    box-shadow: 4px 4px 0 rgba(0,0,0,.25), inset -1px -1px 0 var(--shadow), inset 1px 1px 0 var(--light);
+    box-shadow:4px 4px 0 rgba(0,0,0,.25),
+      inset -1px -1px 0 var(--shadow),
+      inset 1px 1px 0 var(--light);
   }
-  .moremenu button{ width:100%; text-align:left; padding:6px 10px; border:none; border-bottom:1px solid #aaa }
+  .moremenu button{
+    width:100%; text-align:left; padding:6px 10px;
+    border:none; border-bottom:1px solid #aaa;
+  }
   .moremenu button:last-child{ border-bottom:none }
+
   .msg{ margin-top:6px; font-weight:700 }
-  @media (max-width:820px){ .table{ grid-template-columns:1fr } }
+
+  @media (max-width:820px){
+    .table{ grid-template-columns:1fr }
+  }
 </style>
 </head>
 <body>
@@ -144,7 +170,7 @@
       </div>
       <div style="display:flex; gap:6px; align-items:center">
         <span class="label">Bet</span>
-        <input id="bet" type="number" min="1" step="1" value="10" />
+        <input id="bet" type="number" min="1" step="1" value="10">
       </div>
     </div>
 
@@ -189,251 +215,402 @@
 
 <script>
 (function(){
-  // Elements
-  const $=id=>document.getElementById(id);
-  const bankEl=$("bank"), betDisp=$("betDisp"), betInput=$("bet"), shoeLeft=$("shoeLeft");
-  const dealerCardsEl=$("dealerCards"), dealerTotEl=$("dealerTot");
-  const handsEl=$("hands"), msgEl=$("msg");
-  const dealBtn=$("deal"), hitBtn=$("hit"), standBtn=$("stand");
-  const moreBtn=$("more"), moreMenu=$("moreMenu");
-  const doubleBtn=$("double"), splitBtn=$("split"), surrenderBtn=$("surrender");
-  const newShoeBtn=$("newShoe");
+  const $ = id => document.getElementById(id);
 
-  // Game constants
-  const SUITS=["♠","♥","♦","♣"];
-  const RANKS=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
-  const DECKS=6, CUT=0.75;
+  const bankEl = $("bank"), betDisp = $("betDisp"), betInput = $("bet"), shoeLeft = $("shoeLeft");
+  const dealerCardsEl = $("dealerCards"), dealerTotEl = $("dealerTot");
+  const handsEl = $("hands"), msgEl = $("msg");
+  const dealBtn = $("deal"), hitBtn = $("hit"), standBtn = $("stand");
+  const moreBtn = $("more"), moreMenu = $("moreMenu");
+  const doubleBtn = $("double"), splitBtn = $("split"), surrenderBtn = $("surrender");
+  const newShoeBtn = $("newShoe");
 
-  // State
-  let shoe=[], discard=[];
-  let bankroll=1000, bet=10;
-  let dealer=[], hands=[], active=0;
-  let inRound=false, firstAction=true, holeDown=true;
-  let holeFlipEl=null;      // current hole card flip element
-  let busy=false;           // animation/flow lock
+  const SUITS = ["♠","♥","♦","♣"];
+  const RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+  const DECKS = 6, CUT = 0.75;
 
-  // Utils
-  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]]; } }
-  function freshShoe(){ shoe=[]; discard=[]; for(let d=0; d<DECKS; d++){ for(const s of SUITS){ for(const r of RANKS){ shoe.push({rank:r,suit:s}); }}} shuffle(shoe); updateShoe(); msg("New shoe ready."); }
+  let shoe = [], discard = [];
+  let bankroll = 1000, bet = 10;
+
+  let dealer = [];          // [{rank,suit}]
+  let hands = [];           // [{cards:[], bet, done:false}]
+  let active = 0;
+  let inRound = false;
+  let firstAction = false;
+  let holeDown = true;
+  let justRevealedHole = false;
+
+  function shuffle(a){
+    for(let i=a.length-1;i>0;i--){
+      const j = (Math.random()*(i+1))|0;
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+  }
+  function freshShoe(){
+    shoe = []; discard = [];
+    for(let d=0; d<DECKS; d++){
+      for(const s of SUITS){
+        for(const r of RANKS){
+          shoe.push({rank:r,suit:s});
+        }
+      }
+    }
+    shuffle(shoe);
+    updateShoe();
+    msg("New shoe ready.");
+  }
   function updateShoe(){ shoeLeft.textContent = shoe.length; }
-  function draw(){ if(!shoe.length) freshShoe(); const c=shoe.pop(); updateShoe(); return c; }
-  function ensurePen(){ if(shoe.length < 52*DECKS*(1-CUT)) freshShoe(); }
+  function draw(){
+    if(!shoe.length) freshShoe();
+    const c = shoe.pop();
+    updateShoe();
+    return c;
+  }
+  function ensurePen(){
+    if(shoe.length < 52*DECKS*(1-CUT)) freshShoe();
+  }
+
   const isRed = s => (s==="♥"||s==="♦");
-  function val(r){ if(r==="A")return 11; if(["10","J","Q","K"].includes(r)) return 10; return parseInt(r,10); }
-  function total(cards){ let t=0,a=0; for(const c of cards){ t+=val(c.rank); if(c.rank==="A")a++; } while(t>21&&a>0){ t-=10; a--; } return t; }
-  function visibleDealer(){ return holeDown ? total([dealer[0]]) : total(dealer); }
+  function val(r){
+    if(r==="A") return 11;
+    if(["10","J","Q","K"].includes(r)) return 10;
+    return parseInt(r,10);
+  }
+  function total(cards){
+    let t=0, aces=0;
+    for(const c of cards){ t += val(c.rank); if(c.rank==="A") aces++; }
+    while(t>21 && aces>0){ t -= 10; aces--; }
+    return t;
+  }
+  function visibleDealer(){
+    if(!dealer.length) return "";
+    return holeDown ? total([dealer[0]]) : total(dealer);
+  }
   function sameValue(a,b){ return val(a.rank)===val(b.rank); }
 
-  // Rendering
-  function cardFace(c, iIndex){
-    const el=document.createElement("div");
-    el.className="card " + (isRed(c.suit)?'red':'');
-    el.textContent=c.rank + c.suit;
-    if(iIndex!=null){ el.dataset.i=iIndex; el.style.setProperty('--i', iIndex); }
+  function cardEl(card, idx, extraClass){
+    const el = document.createElement("div");
+    el.className = "card" + (isRed(card.suit) ? " red" : "") + (extraClass ? " "+extraClass : "");
+    el.textContent = card.rank + card.suit;
+    if(typeof idx==="number"){
+      el.dataset.i = idx;
+      el.style.setProperty("--i", idx);
+    }
     return el;
   }
-  function renderDealer(){
-    dealerCardsEl.innerHTML=""; holeFlipEl=null;
-    if(!dealer.length){ dealerTotEl.textContent=""; return; }
-
-    // up card
-    dealerCardsEl.appendChild(cardFace(dealer[0],0));
-
-    if(holeDown){
-      // hole is a flip card
-      const flip=document.createElement('div'); flip.className='flip';
-      const inner=document.createElement('div'); inner.className='inner';
-      const front=document.createElement('div'); front.className='face front';
-      const back=document.createElement('div'); back.className='face back '+(isRed(dealer[1].suit)?'red':'');
-      back.textContent=dealer[1].rank+dealer[1].suit;
-      inner.appendChild(front); inner.appendChild(back);
-      flip.appendChild(inner);
-      holeFlipEl=flip;
-      dealerCardsEl.appendChild(flip);
-      // any extras (shouldn’t exist yet pre-reveal, but safe)
-      for(let i=2;i<dealer.length;i++) dealerCardsEl.appendChild(cardFace(dealer[i],i));
-    }else{
-      for(let i=1;i<dealer.length;i++) dealerCardsEl.appendChild(cardFace(dealer[i],i));
+  function backEl(idx){
+    const el = document.createElement("div");
+    el.className = "card back";
+    if(typeof idx==="number"){
+      el.dataset.i = idx;
+      el.style.setProperty("--i", idx);
     }
-    dealerTotEl.textContent=visibleDealer();
+    return el;
   }
+
+  function renderDealer(){
+    dealerCardsEl.innerHTML = "";
+    dealer.forEach((c,i)=>{
+      if(i===1 && holeDown){
+        dealerCardsEl.appendChild(backEl(i));
+      }else{
+        const extra = (!holeDown && i===1 && justRevealedHole) ? "flip-reveal" : "";
+        dealerCardsEl.appendChild(cardEl(c,i,extra));
+      }
+    });
+    dealerTotEl.textContent = visibleDealer();
+  }
+
   function renderHands(){
-    handsEl.innerHTML="";
+    handsEl.innerHTML = "";
     hands.forEach((h,i)=>{
-      const wrap=document.createElement("div");
-      wrap.className="hand"+((i===active && inRound)?' active':'');
-      const head=document.createElement("div");
-      head.className="heading";
-      head.innerHTML=`HAND ${i+1} <span class="tot">${total(h.cards)}</span>`;
-      const cards=document.createElement("div");
-      cards.className="cards";
-      h.cards.forEach((c,idx)=>cards.appendChild(cardFace(c, idx)));
-      wrap.appendChild(head); wrap.appendChild(cards); handsEl.appendChild(wrap);
-      h._els={wrap,cards};
+      const wrap = document.createElement("div");
+      wrap.className = "hand" + ((inRound && i===active) ? " active" : "");
+      const head = document.createElement("div");
+      head.className = "heading";
+      const totSpan = `<span class="tot">${total(h.cards)}</span>`;
+      head.innerHTML = `HAND ${i+1} ${totSpan}`;
+      const cardsDiv = document.createElement("div");
+      cardsDiv.className = "cards";
+      h.cards.forEach((c,idx)=>{
+        cardsDiv.appendChild(cardEl(c, idx));
+      });
+      wrap.appendChild(head);
+      wrap.appendChild(cardsDiv);
+      handsEl.appendChild(wrap);
     });
   }
-  function render(){
-    renderDealer(); renderHands();
-    bankEl.textContent=bankroll; betDisp.textContent=bet;
 
+  function setButtons(){
     if(!inRound){
-      dealBtn.disabled=false; hitBtn.disabled=true; standBtn.disabled=true;
-      doubleBtn.disabled=true; splitBtn.disabled=true; surrenderBtn.disabled=true;
+      dealBtn.disabled = false;
+      hitBtn.disabled = true;
+      standBtn.disabled = true;
+      doubleBtn.disabled = true;
+      splitBtn.disabled = true;
+      surrenderBtn.disabled = true;
     }else{
-      dealBtn.disabled=true; hitBtn.disabled=false; standBtn.disabled=false;
-      const h=hands[active];
-      const canD=firstAction && bankroll>=h.bet;
-      const canS=firstAction && h.cards.length===2 && bankroll>=h.bet && sameValue(h.cards[0],h.cards[1]);
-      doubleBtn.disabled=!canD; splitBtn.disabled=!canS; surrenderBtn.disabled=!firstAction;
+      dealBtn.disabled = true;
+      const h = hands[active];
+      hitBtn.disabled = false;
+      standBtn.disabled = false;
+      const canD = firstAction && bankroll >= h.bet;
+      const canS = firstAction && h.cards.length===2 && bankroll >= h.bet && sameValue(h.cards[0],h.cards[1]);
+      doubleBtn.disabled = !canD;
+      splitBtn.disabled = !canS;
+      surrenderBtn.disabled = !firstAction;
     }
   }
-  function msg(t=""){ msgEl.textContent=t; }
 
-  // Flow helpers (locked by 'busy' so state can’t glitch)
-  async function startRound(){
-    if(busy||inRound) return; busy=true;
-    bet=Math.max(1,Math.floor(Number(betInput.value||10)));
-    if(bet>bankroll){ msg("Bet exceeds bankroll."); busy=false; return; }
+  function render(){
+    renderDealer();
+    renderHands();
+    bankEl.textContent = bankroll;
+    betDisp.textContent = bet;
+    setButtons();
+    justRevealedHole = false; // one-shot flag
+  }
+
+  function msg(t){ msgEl.textContent = t || ""; }
+
+  function currentHand(){ return hands[active]; }
+
+  function startRound(){
+    if(inRound) return;
+    bet = Math.max(1, Math.floor(Number(betInput.value || 10)));
+    if(bet > bankroll){
+      msg("Bet exceeds bankroll.");
+      return;
+    }
     ensurePen();
-    bankroll-=bet; dealer=[]; hands=[{cards:[],bet,done:false}]; active=0;
-    inRound=true; firstAction=true; holeDown=true; msg(""); render();
+    bankroll -= bet;
 
-    // Fan-out deal: P D P D(hole)
-    hands[0].cards.push(draw()); render(); await sleep(160);
-    dealer.push(draw()); render(); await sleep(160);
-    hands[0].cards.push(draw()); render(); await sleep(160);
-    dealer.push(draw()); render();
+    dealer = [];
+    hands = [{cards:[], bet, done:false}];
+    active = 0;
+    inRound = true;
+    firstAction = true;
+    holeDown = true;
+    justRevealedHole = false;
+    msg("");
 
-    // Naturals
-    if(total(hands[0].cards)===21 || (["A","10","J","Q","K"].includes(dealer[0].rank) && total(dealer)===21)){
-      await finishRound(); busy=false; return;
+    // initial deal: P D P D
+    hands[0].cards.push(draw());
+    dealer.push(draw());
+    hands[0].cards.push(draw());
+    dealer.push(draw());
+
+    // naturals check
+    const pTot = total(hands[0].cards);
+    const dTot = total(dealer);
+    const playerBJ = (pTot===21 && hands[0].cards.length===2);
+    const dealerBJ = (dTot===21 && dealer.length===2);
+
+    if(playerBJ || dealerBJ){
+      holeDown = false;
+      justRevealedHole = true;
+      resolveNaturals(playerBJ, dealerBJ);
+      return;
     }
-    busy=false; // ready for actions
-  }
 
-  async function playerHit(){
-    if(busy||!inRound) return; busy=true;
-    const h=hands[active];
-    h.cards.push(draw()); firstAction=false; render();
-    await sleep(200);
-    if(total(h.cards)>21){ await nextHand(); busy=false; return; }
-    busy=false;
-  }
-
-  async function playerStand(){
-    if(busy||!inRound) return; busy=true;
-    await nextHand();
-    busy=false;
-  }
-
-  async function playerDouble(){
-    if(busy||!inRound) return;
-    const h=hands[active];
-    if(!(firstAction&&bankroll>=h.bet)) return;
-    busy=true; bankroll-=h.bet; h.bet*=2; h.cards.push(draw()); firstAction=false; render();
-    await sleep(220);
-    await nextHand(); busy=false;
-  }
-
-  async function playerSplit(){
-    if(busy||!inRound) return;
-    const h=hands[active];
-    if(!(firstAction&&h.cards.length===2&&bankroll>=h.bet&&sameValue(h.cards[0],h.cards[1]))) return;
-    busy=true; bankroll-=h.bet;
-    const c1=h.cards[0], c2=h.cards[1];
-    hands.splice(active,1,
-      {cards:[c1, draw()], bet:h.bet, done:false},
-      {cards:[c2, draw()], bet:h.bet, done:false}
-    );
-    firstAction=true; render(); busy=false;
-  }
-
-  async function playerSurrender(){
-    if(busy||!inRound||!firstAction) return; busy=true;
-    const h=hands[active];
-    bankroll += Math.floor(h.bet/2);
-    h.done=true;
-    if(hands.length===1){ inRound=false; msg("Surrender."); render(); busy=false; return; }
-    await nextHand(); busy=false;
-  }
-
-  async function nextHand(){
-    const h=hands[active];
-    h.done=true; firstAction=true; active++;
-    if(active>=hands.length){
-      await dealerPlay(); await settle(); return;
-    }
     render();
   }
 
-  // Dealer logic with flip + paced draws
-  async function dealerPlay(){
-    // flip hole
-    holeDown=false;
-    if(holeFlipEl){
-      holeFlipEl.classList.add('revealed');
-      await sleep(360);
+  function resolveNaturals(playerBJ, dealerBJ){
+    let outcome = "";
+    let net = 0;
+    if(playerBJ && dealerBJ){
+      bankroll += hands[0].bet; // push: return bet
+      outcome = "Push (both blackjack)";
+    }else if(playerBJ){
+      const pay = hands[0].bet * 2.5; // bet + 3:2
+      bankroll += pay;
+      net = pay - hands[0].bet;
+      outcome = "Blackjack!";
+    }else if(dealerBJ){
+      outcome = "Dealer blackjack";
     }
+    inRound = false;
     render();
-    await sleep(140);
-    // draw to 17 (S17)
-    while(total(dealer)<17){
-      dealer.push(draw()); render();
-      await sleep(320);
+    msg(net>0 ? `${outcome} You win $${net.toFixed(0)}.` : outcome);
+  }
+
+  function nextStep(){
+    // find next unfinished hand
+    let next = -1;
+    for(let i=active+1;i<hands.length;i++){
+      if(!hands[i].done){ next = i; break; }
+    }
+    if(next !== -1){
+      active = next;
+      firstAction = true;
+      render();
+    }else{
+      // dealer plays
+      dealerPlay();
     }
   }
 
-  async function finishRound(){
-    holeDown=false;
-    if(holeFlipEl){ holeFlipEl.classList.add('revealed'); await sleep(360); }
+  function dealerPlay(){
+    holeDown = false;
+    justRevealedHole = true;
+    // reveal first
     render();
-    await settle();
+    // draw to 17
+    while(total(dealer) < 17){
+      dealer.push(draw());
+    }
+    render();
+    settleRound();
   }
 
-  async function settle(){
-    const d=total(dealer); const dealerBJ=(d===21&&dealer.length===2);
-    let net=0;
+  function settleRound(){
+    const dTot = total(dealer);
+    let net = 0;
     for(const h of hands){
-      const p=total(h.cards); const playerBJ=(p===21&&h.cards.length===2);
-      let out="lose";
-      if(p>21) out="lose";
-      else if(dealerBJ && playerBJ) out="push";
-      else if(playerBJ && !dealerBJ) out="blackjack";
-      else if(d>21 || p>d) out="win";
-      else if(p===d) out="push";
-      else out="lose";
+      const pTot = total(h.cards);
+      const playerBJ = (pTot===21 && h.cards.length===2); // after split, still counts
+      let result = "lose";
+      if(pTot>21){
+        result = "lose";
+      }else if(dTot>21){
+        result = "win";
+      }else if(playerBJ && dealer.length===2 && dTot===21){
+        result = "push";
+      }else if(playerBJ){
+        result = "blackjack";
+      }else if(pTot>dTot){
+        result = "win";
+      }else if(pTot===dTot){
+        result = "push";
+      }else{
+        result = "lose";
+      }
 
-      if(out==="blackjack"){ bankroll+=h.bet+Math.floor(h.bet*2.5); net+=Math.floor(h.bet*1.5); }
-      else if(out==="win"){ bankroll+=h.bet*2; net+=h.bet; }
-      else if(out==="push"){ bankroll+=h.bet; }
+      if(result==="blackjack"){
+        const pay = h.bet*2.5;
+        bankroll += pay;
+        net += pay - h.bet;
+      }else if(result==="win"){
+        const pay = h.bet*2;
+        bankroll += pay;
+        net += pay - h.bet;
+      }else if(result==="push"){
+        bankroll += h.bet;
+      }
     }
-    inRound=false; render();
-    msg(net>0?`You won $${net}`:(net===0?`Push`:`You lose`));
+    inRound = false;
+    render();
+    msg(net>0 ? `You win $${net.toFixed(0)}.` : (net<0 ? "You lose." : "Push."));
   }
 
-  // Wire-up
-  dealBtn.addEventListener("click", ()=>startRound());
-  hitBtn.addEventListener("click", ()=>playerHit());
-  standBtn.addEventListener("click", ()=>playerStand());
-  doubleBtn.addEventListener("click", ()=>playerDouble());
-  splitBtn.addEventListener("click", ()=>playerSplit());
-  surrenderBtn.addEventListener("click", ()=>playerSurrender());
-  newShoeBtn.addEventListener("click", ()=>{ if(!busy){ freshShoe(); render(); }});
+  // Actions
+  function doHit(){
+    if(!inRound) return;
+    const h = currentHand();
+    h.cards.push(draw());
+    firstAction = false;
+    render();
+    if(total(h.cards)>21){
+      h.done = true;
+      nextStep();
+    }
+  }
+
+  function doStand(){
+    if(!inRound) return;
+    const h = currentHand();
+    h.done = true;
+    firstAction = false;
+    nextStep();
+  }
+
+  function doDouble(){
+    if(!inRound) return;
+    const h = currentHand();
+    if(!firstAction || bankroll < h.bet) return;
+    bankroll -= h.bet;
+    h.bet *= 2;
+    h.cards.push(draw());
+    firstAction = false;
+    render();
+    if(total(h.cards)>21){
+      h.done = true;
+      nextStep();
+    }else{
+      h.done = true;
+      nextStep();
+    }
+  }
+
+  function doSplit(){
+    if(!inRound) return;
+    const h = currentHand();
+    if(!firstAction || h.cards.length!==2 || bankroll < h.bet) return;
+    if(!sameValue(h.cards[0],h.cards[1])) return;
+
+    bankroll -= h.bet;
+    const c1 = h.cards[0];
+    const c2 = h.cards[1];
+
+    const newHands = [];
+    for(let i=0;i<hands.length;i++){
+      if(i===active){
+        newHands.push({cards:[c1, draw()], bet:h.bet, done:false});
+        newHands.push({cards:[c2, draw()], bet:h.bet, done:false});
+      }else{
+        newHands.push(hands[i]);
+      }
+    }
+    hands = newHands;
+    active = active; // play first split hand
+    firstAction = true;
+    render();
+  }
+
+  function doSurrender(){
+    if(!inRound) return;
+    const h = currentHand();
+    if(!firstAction) return;
+    bankroll += Math.floor(h.bet/2);
+    h.done = true;
+    // if only hand, end immediately
+    let anyActive = hands.some(x=>!x.done);
+    if(!anyActive){
+      inRound = false;
+      render();
+      msg("Surrender.");
+    }else{
+      nextStep();
+    }
+  }
+
+  // Wire up
+  dealBtn.addEventListener("click", startRound);
+  hitBtn.addEventListener("click", doHit);
+  standBtn.addEventListener("click", doStand);
+  doubleBtn.addEventListener("click", doDouble);
+  splitBtn.addEventListener("click", doSplit);
+  surrenderBtn.addEventListener("click", doSurrender);
+  newShoeBtn.addEventListener("click", ()=>{ if(!inRound){ freshShoe(); render(); } });
 
   betInput.addEventListener("change", ()=>{
-    bet=Math.max(1,Math.floor(Number(betInput.value)||10));
-    betInput.value=bet; betDisp.textContent=bet;
+    bet = Math.max(1, Math.floor(Number(betInput.value)||10));
+    betInput.value = bet;
+    betDisp.textContent = bet;
   });
 
-  moreBtn.addEventListener("click", (e)=>{
+  moreBtn.addEventListener("click", e=>{
     e.stopPropagation();
-    moreMenu.style.display=(moreMenu.style.display==="block"?"none":"block");
+    moreMenu.style.display = (moreMenu.style.display==="block" ? "none" : "block");
   });
-  document.addEventListener("click", ()=>{ moreMenu.style.display="none"; });
+  document.addEventListener("click", ()=>{
+    moreMenu.style.display = "none";
+  });
 
-  // Boot
-  freshShoe(); render();
+  // boot
+  freshShoe();
+  render();
 })();
 </script>
 </body>
