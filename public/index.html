@@ -1,74 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Symmetrical Lamp Web Arcade</title>
+<meta charset="utf-8" />
+<title>Symmetrical Lamp — Retro Games</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
-  body {
-    background-color: #c0c0c0; /* Windows 98 silver */
-    color: #000000;
-    font-family: "Times New Roman", serif;
-    margin: 0;
+  :root{
+    --win:#c0c0c0; --light:#ffffff; --mid:#dfdfdf; --shadow:#808080; --dark:#000000;
   }
-  a { color: #0000ee; text-decoration: underline; }
-  a:hover { color: #ff0000; }
-  table { margin: 60px auto; border-collapse: collapse; background: #f0f0f0; border: 2px outset #fff; }
-  td { padding: 20px 40px; text-align: center; }
-  h1 {
-    font-family: "Comic Sans MS", cursive;
-    font-size: 36px;
-    color: navy;
-    text-shadow: 1px 1px 0 #ffffff;
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--win);
+    font:14px Tahoma, Verdana, Arial, sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
   }
-  hr { border: 0; height: 2px; background: #808080; }
-  .footer {
-    text-align: center;
-    font-size: 12px;
-    margin-top: 40px;
-    color: #333;
+  .window{
+    background:var(--win);
+    border:2px solid var(--dark);
+    box-shadow:
+      inset -1px -1px 0 var(--shadow),
+      inset  1px  1px 0 var(--light),
+      inset -2px -2px 0 var(--dark),
+      inset  2px  2px 0 var(--mid);
+    width:min(600px, 96vw);
+    padding:8px;
   }
-  .marquee {
-    background: #000080;
-    color: #ffff00;
-    font-family: "Courier New", monospace;
-    padding: 6px;
-    margin-bottom: 10px;
+  .titlebar{
+    background:linear-gradient(#000080,#0000a8);
+    color:#fff;
+    padding:3px 6px;
+    margin-bottom:6px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-weight:700;
   }
-  .container {
-    max-width: 700px;
-    margin: 0 auto;
-    border: 3px groove #ffffff;
-    padding: 20px;
-    background: #dcdcdc;
-    box-shadow: inset 2px 2px 0 #ffffff, inset -2px -2px 0 #808080;
+  .frame{
+    border:2px solid var(--shadow);
+    box-shadow:
+      inset -1px -1px 0 var(--dark),
+      inset  1px  1px 0 var(--light);
+    padding:10px;
+    background:var(--mid);
+  }
+  h1{
+    font-size:18px;
+    margin:0 0 10px 0;
+  }
+  .ascii{
+    font-family:"Courier New", monospace;
+    font-size:11px;
+    white-space:pre;
+    background:#000;
+    color:#0f0;
+    padding:6px;
+    margin-bottom:10px;
+    border:2px inset #333;
+    max-width:100%;
+    overflow:auto;
+  }
+  .intro{
+    margin-bottom:10px;
+  }
+  .intro p{
+    margin:4px 0;
+  }
+  ul{
+    list-style-type:none;
+    padding-left:0;
+    margin:8px 0 4px 0;
+  }
+  li{
+    margin:4px 0;
+  }
+  a{
+    color:#000080;
+    text-decoration:none;
+  }
+  a:hover{
+    text-decoration:underline;
+  }
+  .link-btn{
+    display:inline-block;
+    padding:4px 10px;
+    background:var(--win);
+    border:2px solid var(--shadow);
+    box-shadow:
+      inset -1px -1px 0 var(--dark),
+      inset  1px  1px 0 var(--light);
+    margin:2px 0;
+  }
+  .link-btn:active{
+    box-shadow:
+      inset -1px -1px 0 var(--light),
+      inset  1px  1px 0 var(--dark);
+  }
+  .footer{
+    margin-top:10px;
+    font-size:11px;
+    color:#333;
   }
 </style>
 </head>
 <body>
+<div class="window">
+  <div class="titlebar">
+    <div>Symmetrical Lamp</div>
+    <div>Retro Games Hub</div>
+  </div>
+  <div class="frame">
+    <h1>Welcome to Symmetrical Lamp</h1>
 
-<div class="marquee">
-  <marquee behavior="scroll" direction="left" scrollamount="4">🌟 Welcome to the Symmetrical Lamp Web Arcade — The Future is Now (1998 Edition)! 🌟</marquee>
+    <div class="ascii">
+      /----------------------\\
+      |   .-==-.             |
+      |  /  __  \\   Retro   |
+      |  | |  | |   Games    |
+      |  | |__| |   Arcade   |
+      |  \\      /           |
+      |   '----'   * * *     |
+      \\----------------------/
+    </div>
+
+    <div class="intro">
+      <p>Select a game to begin your extremely serious, high-stakes nostalgia session:</p>
+    </div>
+
+    <ul>
+      <li>
+        <a class="link-btn" href="snake.html">
+          ► Snake (NOTKIA style)
+        </a>
+      </li>
+      <li>
+        <a class="link-btn" href="minesweeper.html">
+          ► Minesweeper (Classic 90s desktop)
+        </a>
+      </li>
+      <li>
+        <a class="link-btn" href="blackjack/blackjack.html">
+          ► Blackjack (Retro Table)
+        </a>
+      </li>
+    </ul>
+
+    <div class="footer">
+      <div>Tip: Use Back buttons inside games to return here.</div>
+    </div>
+  </div>
 </div>
-
-<div class="container">
-  <h1>Symmetrical Lamp Web Arcade</h1>
-  <hr>
-  <p>Step into the internet of yesteryear — where frames ruled, tables reigned, and the future was <i>silver</i>.</p>
-
-  <table border="1">
-    <tr><td><a href="snake.html">🐍 Play Snake</a></td></tr>
-    <tr><td><a href="minesweeper.html">💣 Play Minesweeper</a></td></tr>
-    <tr><td><a href="blackjack.html">♠️ Play Blackjack</a></td></tr>
-  </table>
-
-  <p>Each game runs right in your browser — no plug-ins required! (Best viewed in Netscape Navigator 4.7)</p>
-</div>
-
-<div class="footer">
-  <hr>
-  <p>© 1998 Symmetrical Lamp Productions • All Rights Reserved<br>
-  <a href="mailto:webmaster@symmetricallamp.com">Contact the Webmaster</a></p>
-</div>
-
 </body>
 </html>
