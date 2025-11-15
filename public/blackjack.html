@@ -522,11 +522,29 @@
         bankroll += h.bet;
       }
     }
-    inRound = false;
-    renderAll();
-    if(net>0) msg(`You win $${net.toFixed(0)}.`);
-    else if(net<0) msg("You lose.");
-    else msg("Push.");
+   // determine if all hands were true pushes
+let allPush = true;
+for (const h of hands) {
+  const pTot = total(h.cards);
+  const dTot = total(dealer);
+  if (pTot !== dTot) {
+    allPush = false;
+    break;
+  }
+}
+
+inRound = false;
+renderAll();
+
+// outcome message
+if (net > 0) {
+  msg(`You win $${net.toFixed(0)}.`);
+} else if (net < 0) {
+  msg("You lose.");
+} else {
+  msg(allPush ? "Push." : "No net change.");
+}
+
   }
 
   function doHit(){
