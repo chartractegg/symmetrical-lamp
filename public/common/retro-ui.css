@@ -1,0 +1,153 @@
+/* ============================================================
+   Retro UI — Shared Stylesheet
+   Symmetrical Lamp (Public/Common)
+   ============================================================ */
+
+/* Windows-98-ish color palette */
+:root {
+  --win:#c0c0c0;
+  --light:#ffffff;
+  --mid:#dfdfdf;
+  --shadow:#808080;
+  --dark:#000000;
+
+  --accent-blue:#0000a8;
+  --accent-blue-light:#000080;
+
+  --font-main: Tahoma, Verdana, Arial, sans-serif;
+  --font-mono: "Courier New", monospace;
+}
+
+/* ============================= */
+/* GENERAL LAYOUT & TYPOGRAPHY   */
+/* ============================= */
+
+* {
+  box-sizing:border-box;
+  user-select:none;
+}
+
+html, body {
+  height:100%;
+  margin:0;
+  background:var(--win);
+  font:14px/1 var(--font-main);
+  color:var(--dark);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* ============================= */
+/* WINDOW / FRAME                */
+/* ============================= */
+
+.window {
+  background:var(--win);
+  border:2px solid var(--dark);
+  width:min(96vw, 960px);
+  padding:8px;
+
+  box-shadow:
+    inset -1px -1px 0 var(--shadow),
+    inset  1px  1px 0 var(--light),
+    inset -2px -2px 0 var(--dark),
+    inset  2px  2px 0 var(--mid);
+}
+
+.titlebar {
+  background:linear-gradient(var(--accent-blue-light), var(--accent-blue));
+  color:#fff;
+  padding:3px 6px;
+  margin-bottom:6px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:700;
+}
+
+.frame {
+  border:2px solid var(--shadow);
+  background:var(--mid);
+  padding:10px;
+
+  box-shadow:
+    inset -1px -1px 0 var(--dark),
+    inset  1px  1px 0 var(--light);
+}
+
+/* ============================= */
+/* BUTTONS                       */
+/* ============================= */
+
+button,
+.btn,
+a.btn-link {
+  background:var(--win);
+  border:2px solid var(--shadow);
+  padding:6px 12px;
+  cursor:pointer;
+  font:14px var(--font-main);
+  color:#000;
+  text-decoration:none;
+
+  box-shadow:
+    inset -1px -1px 0 var(--dark),
+    inset  1px  1px 0 var(--light);
+}
+
+button:active,
+.btn:active,
+a.btn-link:active {
+  box-shadow:
+    inset -1px -1px 0 var(--light),
+    inset  1px  1px 0 var(--dark);
+}
+
+button:disabled {
+  color:#666;
+  cursor:not-allowed;
+}
+
+/* ============================= */
+/* BACK BUTTON                   */
+/* ============================= */
+
+.backwrap {
+  margin-top:14px;
+  text-align:center;
+}
+
+.backbtn {
+  display:inline-block;
+  padding:6px 22px;
+  border:2px solid var(--shadow);
+  background:var(--win);
+  color:black;
+  text-decoration:none;
+
+  box-shadow:
+    inset -1px -1px 0 var(--dark),
+    inset  1px  1px 0 var(--light);
+}
+
+.backbtn:active {
+  box-shadow:
+    inset -1px -1px 0 var(--light),
+    inset  1px  1px 0 var(--dark);
+}
+
+/* ============================= */
+/* ASCII BOX (CRT-style windows) */
+/* ============================= */
+
+.ascii-box {
+  background:#000;
+  color:#0f0;
+  padding:6px;
+  border:2px inset #333;
+  font-family:var(--font-mono);
+  font-size:11px;
+  white-space:pre;
+  overflow:au
