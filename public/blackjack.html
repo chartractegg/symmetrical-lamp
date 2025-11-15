@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Blackjack — Symmetrical Lamp</title>
+<title>Blackjack — Retro Symmetrical Lamp</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   :root{
@@ -12,7 +12,7 @@
   *{box-sizing:border-box; user-select:none}
   html,body{height:100%}
   body{
-    margin:0; background:#c0c0c0; color:var(--ink);
+    margin:0; background:var(--win); color:var(--ink);
     font:14px/1 Tahoma, Verdana, Arial, sans-serif;
     display:flex; align-items:center; justify-content:center;
   }
@@ -21,7 +21,7 @@
     background:var(--win); border:2px solid var(--dark);
     box-shadow: inset -1px -1px 0 var(--shadow), inset 1px 1px 0 var(--light),
                 inset -2px -2px 0 var(--dark), inset 2px 2px 0 var(--mid);
-    padding:8px; width:min(96vw, 940px);
+    padding:8px; width:min(96vw, 960px);
   }
   .titlebar{
     background:linear-gradient(#000080,#0000a8); color:#fff;
@@ -61,16 +61,15 @@
 
   .table{ display:grid; grid-template-columns:1fr 230px; gap:8px }
   .felt{
-    background:var(--felt); border-radius:8px; padding:10px;
-    border:2px solid var(--shadow);
-    box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 #2f3f2f;
-    min-height:380px;
+    background:var(--felt); border-radius:8px; padding:12px;
+    border:2px solid #2f3f2f;
+    box-shadow: inset -1px -1px 0 #2f3f2f, inset 1px 1px 0 #000;
+    min-height:420px;
   }
 
-  .area{ margin-bottom:10px }
   .heading{
     font-weight:700; margin-bottom:4px;
-    display:flex; align-items:center; gap:6px;
+    display:flex; align-items:center; gap:8px;
   }
   .tot{
     background:#000; color:#ff1a1a;
@@ -79,17 +78,17 @@
     min-width:24px; text-align:center;
   }
 
-  .row{ display:flex; gap:10px; flex-wrap:wrap }
+  .cards{ display:flex; gap:6px; flex-wrap:wrap }
+
+  .hands{ display:flex; flex-direction:column; gap:8px; margin-top:4px }
   .hand{
     background:rgba(255,255,255,0.08);
     border:2px solid var(--shadow);
     box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 var(--light);
-    padding:6px; border-radius:4px; min-width:230px;
+    padding:6px; border-radius:4px;
   }
   .hand.active{ outline:2px dotted #000 }
-  .cards{ display:flex; gap:6px; flex-wrap:wrap }
 
-  /* base cards (no animation by default) */
   .card{
     width:48px; height:64px;
     border:1px solid #999; border-radius:2px;
@@ -99,22 +98,17 @@
   .card.red{ color:var(--red); }
   .card.back{ background:#d9d9d9; border-style:double; }
 
-  /* animated deal card */
-  .card.deal{
-    animation:dealIn 260ms ease-out both;
+  .card.fly{
+    position:relative;
+    animation:dealIn 260ms ease-out forwards;
   }
-  .card.deal[data-i]{
-    animation-delay: calc(var(--i, 0) * 0.18s); /* more delay between sequence cards */
-  }
-
   @keyframes dealIn{
-    from{ transform:translate(-60px,-50px) rotate(-4deg); opacity:0; }
-    to{ transform:translate(0,0) rotate(0deg); opacity:1; }
+    from{ transform:translate(-60px,-50px) scale(.85); opacity:0; }
+    to{ transform:translate(0,0) scale(1); opacity:1; }
   }
 
-  /* flip reveal for dealer hole */
-  .flip-reveal{
-    animation:flipReveal 320ms ease-out both;
+  .card.flip{
+    animation:flipReveal 320ms ease-out forwards;
     transform-origin:center;
   }
   @keyframes flipReveal{
@@ -129,30 +123,52 @@
     box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 var(--light);
     padding:8px;
   }
-  .buttons{ display:flex; gap:8px; flex-wrap:wrap }
+  .group button{ margin:2px 2px }
+
   button{
     background:var(--win); border:2px solid var(--shadow); padding:6px 12px; cursor:pointer;
     box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 var(--light);
     font:14px/1 Tahoma, Arial;
   }
-  button:active{ box-shadow: inset -1px -1px 0 var(--light), inset 1px 1px 0 var(--dark); }
+  button:active{
+    box-shadow: inset -1px -1px 0 var(--light), inset 1px 1px 0 var(--dark);
+  }
   button:disabled{ color:#666; cursor:not-allowed }
 
-  .morewrap{ position:relative }
+  .morewrap{ position:relative; display:inline-block }
   .moremenu{
-    position:absolute; right:0; top:110%; min-width:180px; display:none; z-index:10;
+    position:absolute; right:0; top:110%; min-width:170px; display:none; z-index:10;
     background:var(--win); border:2px solid var(--dark);
     box-shadow:4px 4px 0 rgba(0,0,0,.25),
       inset -1px -1px 0 var(--shadow),
       inset 1px 1px 0 var(--light);
   }
   .moremenu button{
-    width:100%; text-align:left; padding:6px 10px;
-    border:none; border-bottom:1px solid #aaa;
+    width:100%; text-align:left; padding:6px 10px; border:none; border-bottom:1px solid #aaa;
   }
   .moremenu button:last-child{ border-bottom:none }
 
-  .msg{ margin-top:6px; font-weight:700 }
+  .msg{ margin-top:10px; font-weight:700 }
+
+  .backwrap{
+    text-align:center; margin-top:14px;
+  }
+  .backbtn{
+    font:14px Tahoma, Arial;
+    padding:6px 22px;
+    background:var(--win);
+    border:2px solid var(--shadow);
+    box-shadow: inset -1px -1px 0 var(--dark),
+                inset 1px 1px 0 var(--light);
+    cursor:pointer;
+    text-decoration:none;
+    color:black;
+    display:inline-block;
+  }
+  .backbtn:active{
+    box-shadow: inset -1px -1px 0 var(--light),
+                inset 1px 1px 0 var(--dark);
+  }
 
   @media (max-width:820px){
     .table{ grid-template-columns:1fr }
@@ -162,15 +178,14 @@
 <body>
 <div class="window">
   <div class="titlebar">
-    <div>Blackjack</div><div>Win98 Retro</div>
+    <div>Blackjack</div><div>Retro Style</div>
   </div>
   <div class="frame">
     <div class="panel">
-      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center">
         <div class="badge">BANK $<span id="bank">1000</span></div>
         <div class="badge">BET $<span id="betDisp">10</span></div>
         <div class="badge">SHOE <span id="shoeLeft">0</span></div>
-        <div class="small">3:2 blackjack • S17 • One seat (split supported)</div>
       </div>
       <div style="display:flex; gap:6px; align-items:center">
         <span class="label">Bet</span>
@@ -180,50 +195,57 @@
 
     <div class="table">
       <div class="felt">
-        <div class="area">
-          <div class="heading">DEALER <span class="tot" id="dealerTot"></span></div>
-          <div class="cards" id="dealerCards"></div>
+        <div class="heading">
+          DEALER <span class="tot" id="dealerTot"></span>
         </div>
-        <hr style="border:0; height:2px; background:#2f3f2f; margin:8px 0">
-        <div class="area">
-          <div class="heading">PLAYER</div>
-          <div id="hands" class="row"></div>
-          <div class="msg" id="msg"></div>
+        <div class="cards" id="dealerCards"></div>
+
+        <hr style="border:0; height:2px; background:#2f3f2f; margin:10px 0">
+
+        <div class="heading">
+          PLAYER
         </div>
+        <div id="hands" class="hands"></div>
+
+        <div id="msg" class="msg"></div>
       </div>
 
       <div class="side">
         <div class="group">
-          <div class="buttons">
-            <button id="deal">Deal</button>
-            <button id="hit" disabled>Hit</button>
-            <button id="stand" disabled>Stand</button>
-            <div class="morewrap">
-              <button id="more">…</button>
-              <div class="moremenu" id="moreMenu">
-                <button id="double" disabled>Double</button>
-                <button id="split" disabled>Split</button>
-                <button id="surrender" disabled>Surrender</button>
-              </div>
+          <button id="deal">Deal</button>
+          <button id="hit" disabled>Hit</button>
+          <button id="stand" disabled>Stand</button>
+          <div class="morewrap">
+            <button id="more">…</button>
+            <div class="moremenu" id="moreMenu">
+              <button id="double" disabled>Double</button>
+              <button id="split" disabled>Split</button>
+              <button id="surrender" disabled>Surrender</button>
             </div>
           </div>
         </div>
         <div class="group">
           <button id="newShoe">New 6-Deck Shoe</button>
-          <div class="small" style="margin-top:6px">Auto reshuffle at ~25% remaining.</div>
+          <div class="small" style="margin-top:6px">Blackjack pays 3:2 • Dealer stands on 17</div>
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="backwrap">
+    <a href="index.html" class="backbtn">⟵ Back</a>
   </div>
 </div>
 
 <script>
 (function(){
   const $ = id => document.getElementById(id);
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-  const bankEl = $("bank"), betDisp = $("betDisp"), betInput = $("bet"), shoeLeft = $("shoeLeft");
+  const bankEl = $("bank"), betEl = $("bet"), betDisp = $("betDisp"), shoeLeft = $("shoeLeft");
   const dealerCardsEl = $("dealerCards"), dealerTotEl = $("dealerTot");
-  const handsEl = $("hands"), msgEl = $("msg");
+  const handsContainer = $("hands"), msgEl = $("msg");
+
   const dealBtn = $("deal"), hitBtn = $("hit"), standBtn = $("stand");
   const moreBtn = $("more"), moreMenu = $("moreMenu");
   const doubleBtn = $("double"), splitBtn = $("split"), surrenderBtn = $("surrender");
@@ -233,26 +255,29 @@
   const RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
   const DECKS = 6, CUT = 0.75;
 
-  let shoe = [], discard = [];
-  let bankroll = 1000, bet = 10;
+  let bankroll = 1000;
+  let baseBet = 10;
+  let roundStartBankroll = 1000;
 
+  let shoe = [];
   let dealer = [];
-  let hands = [];
-  let active = 0;
+  let hands = []; // {cards:[], bet, done, surrendered}
+  let handViews = []; // {wrapper, cardsEl, totEl}
+
+  let activeIndex = 0;
+  let holeDown = true;
   let inRound = false;
   let firstAction = false;
-  let holeDown = true;
-  let justRevealedHole = false;
-  let dealSeq = 0; // animation order index per round
 
   function shuffle(a){
     for(let i=a.length-1;i>0;i--){
-      const j = (Math.random()*(i+1))|0;
+      const j = Math.floor(Math.random()*(i+1));
       [a[i],a[j]] = [a[j],a[i]];
     }
   }
+
   function freshShoe(){
-    shoe = []; discard = [];
+    shoe = [];
     for(let d=0; d<DECKS; d++){
       for(const s of SUITS){
         for(const r of RANKS){
@@ -264,89 +289,148 @@
     updateShoe();
     msg("New shoe ready.");
   }
-  function updateShoe(){ shoeLeft.textContent = shoe.length; }
+
+  function updateShoe(){
+    shoeLeft.textContent = shoe.length;
+  }
+
   function draw(){
     if(!shoe.length) freshShoe();
     const c = shoe.pop();
     updateShoe();
     return c;
   }
-  function ensurePen(){
-    if(shoe.length < 52*DECKS*(1-CUT)) freshShoe();
+
+  function ensurePenetration(){
+    if(shoe.length < 52*DECKS*(1-CUT)){
+      freshShoe();
+    }
   }
 
-  const isRed = s => (s==="♥"||s==="♦");
-  function val(r){
-    if(r==="A") return 11;
-    if(["10","J","Q","K"].includes(r)) return 10;
-    return parseInt(r,10);
+  function val(rank){
+    if(rank === "A") return 11;
+    if(["10","J","Q","K"].includes(rank)) return 10;
+    return parseInt(rank,10);
   }
-  function total(cards){
+
+  function totalHand(cards){
     let t=0, aces=0;
-    for(const c of cards){ t += val(c.rank); if(c.rank==="A") aces++; }
-    while(t>21 && aces>0){ t -= 10; aces--; }
+    for(const c of cards){
+      t += val(c.rank);
+      if(c.rank==="A") aces++;
+    }
+    while(t>21 && aces>0){
+      t-=10; aces--;
+    }
     return t;
   }
-  function visibleDealer(){
-    if(!dealer.length) return "";
-    return holeDown ? total([dealer[0]]) : total(dealer);
-  }
-  function sameValue(a,b){ return val(a.rank)===val(b.rank); }
 
-  function cardEl(card){
+  function isRed(s){ return s==="♥" || s==="♦"; }
+
+  function cardElement(card){
     const el = document.createElement("div");
-    let cls = "card";
-    if(isRed(card.suit)) cls += " red";
-    if(card._animateOnce) cls += " deal";
-    el.className = cls;
+    el.className = "card" + (isRed(card.suit) ? " red" : "");
     el.textContent = card.rank + card.suit;
-    if(card._animateOnce && typeof card._order==="number"){
-      const idx = Math.max(0, Math.min(card._order, 4));
-      el.dataset.i = idx;
-      el.style.setProperty("--i", idx);
-    }
     return el;
   }
-  function backEl(){
+
+  function backCard(){
     const el = document.createElement("div");
     el.className = "card back";
     return el;
   }
 
-  function renderDealer(){
+  async function dealToHand(handIdx, card, animate=true){
+    const view = handViews[handIdx];
+    const el = cardElement(card);
+    if(animate){
+      el.classList.add("fly");
+    }
+    view.cardsEl.appendChild(el);
+    if(animate){
+      await sleep(280);
+      el.classList.remove("fly");
+    }
+  }
+
+  async function dealToDealer(card, opts){
+    const {faceDown=false, animate=true, flip=false} = opts || {};
+    if(faceDown){
+      dealerCardsEl.appendChild(backCard());
+      if(animate) await sleep(200);
+      return;
+    }
+    const el = cardElement(card);
+    if(animate) el.classList.add("fly");
+    dealerCardsEl.appendChild(el);
+    if(animate) await sleep(260);
+    if(flip){
+      el.classList.remove("fly");
+      el.classList.add("flip");
+      await sleep(320);
+      el.classList.remove("flip");
+    }else{
+      el.classList.remove("fly");
+    }
+  }
+
+  function renderDealer(showHole){
     dealerCardsEl.innerHTML = "";
     dealer.forEach((c,i)=>{
-      if(i===1 && holeDown){
-        dealerCardsEl.appendChild(backEl());
+      if(i===1 && holeDown && !showHole){
+        dealerCardsEl.appendChild(backCard());
       }else{
-        const el = cardEl(c);
-        if(!holeDown && i===1 && justRevealedHole){
-          el.classList.add("flip-reveal");
-        }
-        dealerCardsEl.appendChild(el);
+        dealerCardsEl.appendChild(cardElement(c));
       }
     });
-    dealerTotEl.textContent = visibleDealer();
   }
 
-  function renderHands(){
-    handsEl.innerHTML = "";
+  function updateTotals(showHole){
+    // dealer
+    if(!dealer.length){
+      dealerTotEl.textContent = "";
+    }else if(showHole || !holeDown){
+      dealerTotEl.textContent = totalHand(dealer);
+    }else{
+      dealerTotEl.textContent = totalHand([dealer[0]]);
+    }
+    // hands
     hands.forEach((h,i)=>{
-      const wrap = document.createElement("div");
-      wrap.className = "hand" + ((inRound && i===active) ? " active" : "");
-      const head = document.createElement("div");
-      head.className = "heading";
-      head.innerHTML = `HAND ${i+1} <span class="tot">${total(h.cards)}</span>`;
-      const cardsDiv = document.createElement("div");
-      cardsDiv.className = "cards";
-      h.cards.forEach(c => cardsDiv.appendChild(cardEl(c)));
-      wrap.appendChild(head);
-      wrap.appendChild(cardsDiv);
-      handsEl.appendChild(wrap);
+      const view = handViews[i];
+      const t = h.cards.length ? totalHand(h.cards) : "";
+      view.totEl.textContent = t;
+      view.wrapper.classList.toggle("active", inRound && i===activeIndex);
     });
   }
 
-  function setButtons(){
+  function buildHandsLayout(){
+    handsContainer.innerHTML = "";
+    handViews = [];
+    hands.forEach((h,i)=>{
+      const wrap = document.createElement("div");
+      wrap.className = "hand";
+      const heading = document.createElement("div");
+      heading.className = "heading";
+      const label = document.createElement("span");
+      label.textContent = "Hand " + (i+1);
+      const totSpan = document.createElement("span");
+      totSpan.className = "tot";
+      heading.appendChild(label);
+      heading.appendChild(totSpan);
+      const cardsDiv = document.createElement("div");
+      cardsDiv.className = "cards";
+      wrap.appendChild(heading);
+      wrap.appendChild(cardsDiv);
+      handsContainer.appendChild(wrap);
+      handViews.push({wrapper:wrap, cardsEl:cardsDiv, totEl:totSpan});
+    });
+  }
+
+  function msg(text){
+    msgEl.textContent = text || "";
+  }
+
+  function updateButtons(){
     if(!inRound){
       dealBtn.disabled = false;
       hitBtn.disabled = true;
@@ -354,318 +438,388 @@
       doubleBtn.disabled = true;
       splitBtn.disabled = true;
       surrenderBtn.disabled = true;
-    }else{
-      dealBtn.disabled = true;
-      const h = hands[active];
-      hitBtn.disabled = false;
-      standBtn.disabled = false;
-      const canD = firstAction && bankroll >= h.bet;
-      const canS = firstAction && h.cards.length===2 && bankroll>=h.bet && sameValue(h.cards[0],h.cards[1]);
-      doubleBtn.disabled = !canD;
-      splitBtn.disabled = !canS;
-      surrenderBtn.disabled = !firstAction;
+      return;
     }
+    dealBtn.disabled = true;
+
+    const h = hands[activeIndex];
+
+    hitBtn.disabled = false;
+    standBtn.disabled = false;
+
+    const canDouble = firstAction && h.cards.length===2 && bankroll >= h.bet;
+    const canSplit =
+      firstAction &&
+      hands.length === 1 &&
+      h.cards.length===2 &&
+      val(h.cards[0].rank) === val(h.cards[1].rank) &&
+      bankroll >= h.bet;
+
+    const canSurrender =
+      firstAction &&
+      hands.length === 1 &&
+      h.cards.length===2;
+
+    doubleBtn.disabled = !canDouble;
+    splitBtn.disabled = !canSplit;
+    surrenderBtn.disabled = !canSurrender;
   }
 
-  function clearAnimationFlags(){
-    hands.forEach(h=>h.cards.forEach(c=>{ if(c._animateOnce) c._animateOnce=false; }));
-    dealer.forEach(c=>{ if(c._animateOnce) c._animateOnce=false; });
+  function anyPlayableHands(){
+    return hands.some(h => !h.surrendered && totalHand(h.cards) <= 21);
   }
 
-  function renderHUD(){
-    bankEl.textContent = bankroll;
-    betDisp.textContent = bet;
-    setButtons();
-    justRevealedHole = false;
-    clearAnimationFlags();
+  function nextHandIndex(from){
+    for(let i=from+1;i<hands.length;i++){
+      const h = hands[i];
+      if(!h.surrendered && !h.done && totalHand(h.cards)<=21){
+        return i;
+      }
+    }
+    return -1;
   }
 
-  function renderAll(){
-    renderDealer();
-    renderHands();
-    renderHUD();
-  }
-  function renderHandsOnly(){
-    renderHands();
-    renderHUD();
-  }
-
-  function msg(t){ msgEl.textContent = t || ""; }
-
-  function currentHand(){ return hands[active]; }
-
-  function startRound(){
+  async function startRound(){
     if(inRound) return;
-    bet = Math.max(1, Math.floor(Number(betInput.value || 10)));
-    if(bet > bankroll){
+
+    baseBet = Math.max(1, Math.floor(Number(betEl.value || 10)));
+    betEl.value = baseBet;
+    betDisp.textContent = baseBet;
+
+    if(baseBet > bankroll){
       msg("Bet exceeds bankroll.");
       return;
     }
-    ensurePen();
-    bankroll -= bet;
+
+    ensurePenetration();
+
+    roundStartBankroll = bankroll;
+    bankroll -= baseBet;
+    bankEl.textContent = bankroll;
+
     dealer = [];
-    hands = [{cards:[], bet, done:false}];
-    active = 0;
+    hands = [{cards:[], bet:baseBet, done:false, surrendered:false}];
+    activeIndex = 0;
+    holeDown = true;
     inRound = true;
     firstAction = true;
-    holeDown = true;
-    justRevealedHole = false;
-    dealSeq = 0;
     msg("");
 
-    // initial deal: P D P D
-    let c;
-    c = draw(); c._animateOnce=true; c._order = dealSeq++; hands[0].cards.push(c);
-    c = draw(); c._animateOnce=true; c._order = dealSeq++; dealer.push(c);
-    c = draw(); c._animateOnce=true; c._order = dealSeq++; hands[0].cards.push(c);
-    c = draw(); c._animateOnce=true; c._order = dealSeq++; dealer.push(c);
+    buildHandsLayout();
+    dealerCardsEl.innerHTML = "";
+    updateTotals(false);
+    updateButtons();
 
-    renderAll();
+    // Initial 4-card deal with pacing: P, D, P, D(hole)
+    const p1 = draw();
+    const d1 = draw();
+    const p2 = draw();
+    const d2 = draw();
 
-    const pTot = total(hands[0].cards);
-    const dTot = total(dealer);
-    const playerBJ = (pTot===21 && hands[0].cards.length===2);
-    const dealerBJ = (dTot===21 && dealer.length===2);
+    hands[0].cards.push(p1);
+    await dealToHand(0, p1, true);
+    updateTotals(false);
+
+    dealer.push(d1);
+    await dealToDealer(d1, {faceDown:false, animate:true});
+    updateTotals(false);
+
+    hands[0].cards.push(p2);
+    await dealToHand(0, p2, true);
+    updateTotals(false);
+
+    dealer.push(d2);
+    await dealToDealer(d2, {faceDown:true, animate:true});
+    updateTotals(false);
+
+    const pTot = totalHand(hands[0].cards);
+    const dTot = totalHand(dealer);
+    const playerBJ = (pTot === 21);
+    const dealerBJ = (dTot === 21);
 
     if(playerBJ || dealerBJ){
-      resolveNaturals(playerBJ, dealerBJ);
+      await resolveNaturals(playerBJ, dealerBJ);
     }
   }
 
-  function resolveNaturals(playerBJ, dealerBJ){
+  async function resolveNaturals(playerBJ, dealerBJ){
     holeDown = false;
-    justRevealedHole = true;
+    renderDealer(true);
+    updateTotals(true);
 
-    let outcome = "";
+    let text = "";
     let net = 0;
     const b = hands[0].bet;
 
     if(playerBJ && dealerBJ){
+      text = "Push (both blackjack).";
       bankroll += b;
-      outcome = "Push (both blackjack).";
     }else if(playerBJ){
-      const pay = b*2.5;
+      text = "Blackjack!";
+      const pay = b * 2.5;
       bankroll += pay;
       net = pay - b;
-      outcome = "Blackjack!";
     }else if(dealerBJ){
-      outcome = "Dealer blackjack.";
+      text = "Dealer blackjack.";
     }
+
+    bankEl.textContent = bankroll;
     inRound = false;
-    renderAll();
-    if(net>0) msg(`${outcome} You win $${net.toFixed(0)}.`);
-    else msg(outcome);
+    updateButtons();
+    msg(net>0 ? `${text} You win $${net}.` : text);
   }
 
-  function nextStep(){
-    let next = -1;
-    for(let i=active+1;i<hands.length;i++){
-      if(!hands[i].done){ next = i; break; }
-    }
-    if(next !== -1){
-      active = next;
-      firstAction = true;
-      renderHandsOnly();
-    }else{
-      dealerPlay();
-    }
-  }
-
-  function dealerPlay(){
-    holeDown = false;
-    justRevealedHole = true;
-    renderAll();
-
-    while(total(dealer) < 17){
-      const c = draw();
-      c._animateOnce = true;
-      c._order = dealer.length;
-      dealer.push(c);
-      renderAll();
-    }
-    settleRound();
-  }
-
-  function settleRound(){
-    const dTot = total(dealer);
-    let net = 0;
-    for(const h of hands){
-      const pTot = total(h.cards);
-      const playerBJ = (pTot===21 && h.cards.length===2);
-      let result = "lose";
-
-      if(pTot>21){
-        result = "lose";
-      }else if(dTot>21){
-        result = "win";
-      }else if(playerBJ && dealer.length===2 && dTot===21){
-        result = "push";
-      }else if(playerBJ){
-        result = "blackjack";
-      }else if(pTot>dTot){
-        result = "win";
-      }else if(pTot===dTot){
-        result = "push";
-      }else{
-        result = "lose";
-      }
-
-      if(result==="blackjack"){
-        const pay = h.bet*2.5;
-        bankroll += pay;
-        net += pay - h.bet;
-      }else if(result==="win"){
-        const pay = h.bet*2;
-        bankroll += pay;
-        net += h.bet;
-      }else if(result==="push"){
-        bankroll += h.bet;
-      }
-    }
-   // determine if all hands were true pushes
-let allPush = true;
-for (const h of hands) {
-  const pTot = total(h.cards);
-  const dTot = total(dealer);
-  if (pTot !== dTot) {
-    allPush = false;
-    break;
-  }
-}
-
-inRound = false;
-renderAll();
-
-// outcome message
-if (net > 0) {
-  msg(`You win $${net.toFixed(0)}.`);
-} else if (net < 0) {
-  msg("You lose.");
-} else {
-  msg(allPush ? "Push." : "No net change.");
-}
-
-  }
-
-  function doHit(){
+  async function hit(){
     if(!inRound) return;
-    const h = currentHand();
+    const h = hands[activeIndex];
     const c = draw();
-    c._animateOnce = true;
-    c._order = h.cards.length;
     h.cards.push(c);
     firstAction = false;
-    renderHandsOnly();
-    if(total(h.cards)>21){
+
+    await dealToHand(activeIndex, c, true);
+    updateTotals(false);
+
+    const t = totalHand(h.cards);
+    if(t>21){
       h.done = true;
-      nextStep();
+      const next = nextHandIndex(activeIndex);
+      if(next !== -1){
+        activeIndex = next;
+        firstAction = true;
+        updateTotals(false);
+        updateButtons();
+      }else{
+        inRound = false;
+        updateButtons();
+        await finishRound(false);
+      }
+    }else{
+      updateButtons();
     }
   }
 
-  function doStand(){
+  async function stand(){
     if(!inRound) return;
-    const h = currentHand();
+    const h = hands[activeIndex];
     h.done = true;
     firstAction = false;
-    nextStep();
+
+    const next = nextHandIndex(activeIndex);
+    if(next !== -1){
+      activeIndex = next;
+      firstAction = true;
+      updateTotals(false);
+      updateButtons();
+      return;
+    }
+
+    const live = anyPlayableHands();
+    if(live){
+      await dealerPlay();
+      await finishRound(true);
+    }else{
+      inRound = false;
+      updateButtons();
+      await finishRound(false);
+    }
   }
 
-  function doDouble(){
+  async function doubleDown(){
     if(!inRound) return;
-    const h = currentHand();
-    if(!firstAction || bankroll < h.bet) return;
+    const h = hands[activeIndex];
+    if(!(firstAction && h.cards.length===2 && bankroll >= h.bet)) return;
+
     bankroll -= h.bet;
+    bankEl.textContent = bankroll;
     h.bet *= 2;
+
     const c = draw();
-    c._animateOnce = true;
-    c._order = h.cards.length;
     h.cards.push(c);
     firstAction = false;
-    renderHandsOnly();
+
+    await dealToHand(activeIndex, c, true);
+    updateTotals(false);
+
+    const t = totalHand(h.cards);
     h.done = true;
-    if(total(h.cards)>21){
-      nextStep();
+
+    const next = nextHandIndex(activeIndex);
+    if(t>21){
+      if(next !== -1){
+        activeIndex = next;
+        firstAction = true;
+        updateTotals(false);
+        updateButtons();
+      }else{
+        inRound = false;
+        updateButtons();
+        await finishRound(false);
+      }
     }else{
-      nextStep();
+      if(next !== -1){
+        activeIndex = next;
+        firstAction = true;
+        updateTotals(false);
+        updateButtons();
+      }else{
+        const live = anyPlayableHands();
+        if(live){
+          await dealerPlay();
+          await finishRound(true);
+        }else{
+          inRound = false;
+          updateButtons();
+          await finishRound(false);
+        }
+      }
     }
   }
 
-  function doSplit(){
+  async function splitHand(){
     if(!inRound) return;
-    const h = currentHand();
-    if(!firstAction || h.cards.length!==2 || bankroll < h.bet) return;
-    if(!sameValue(h.cards[0],h.cards[1])) return;
+    if(hands.length !== 1) return;
+    const h = hands[0];
+    if(!(firstAction && h.cards.length===2 && bankroll >= h.bet)) return;
+    if(val(h.cards[0].rank) !== val(h.cards[1].rank)) return;
 
     bankroll -= h.bet;
+    bankEl.textContent = bankroll;
+
     const c1 = h.cards[0];
     const c2 = h.cards[1];
 
-    const newHands = [];
-    for(let i=0;i<hands.length;i++){
-      if(i===active){
-        let c;
-        c = draw(); c._animateOnce=true; c._order=0;
-        newHands.push({cards:[c1, c], bet:h.bet, done:false});
-        c = draw(); c._animateOnce=true; c._order=0;
-        newHands.push({cards:[c2, c], bet:h.bet, done:false});
-      }else{
-        newHands.push(hands[i]);
-      }
-    }
-    hands = newHands;
-    active = active;
+    hands = [
+      {cards:[c1], bet:h.bet, done:false, surrendered:false},
+      {cards:[c2], bet:h.bet, done:false, surrendered:false}
+    ];
+    activeIndex = 0;
     firstAction = true;
-    renderHandsOnly();
+
+    buildHandsLayout();
+
+    handViews[0].cardsEl.appendChild(cardElement(c1));
+    handViews[1].cardsEl.appendChild(cardElement(c2));
+    updateTotals(false);
+
+    // deal one extra card to each hand with animation
+    for(let i=0;i<hands.length;i++){
+      const c = draw();
+      hands[i].cards.push(c);
+      await dealToHand(i, c, true);
+      updateTotals(false);
+      await sleep(120);
+    }
+
+    activeIndex = 0;
+    firstAction = true;
+    updateTotals(false);
+    updateButtons();
   }
 
-  function doSurrender(){
+  async function surrender(){
     if(!inRound) return;
-    const h = currentHand();
     if(!firstAction) return;
-    bankroll += Math.floor(h.bet/2);
+    if(hands.length !== 1) return;
+    const h = hands[0];
+    if(h.cards.length !== 2) return;
+
+    h.surrendered = true;
     h.done = true;
-    const any = hands.some(x=>!x.done);
-    if(!any){
-      inRound=false;
-      renderAll();
-      msg("Surrender.");
+    inRound = false;
+
+    const refund = Math.floor(h.bet / 2);
+    bankroll += refund;
+    bankEl.textContent = bankroll;
+
+    updateTotals(false);
+    updateButtons();
+    msg(`Surrender. You lose $${h.bet - refund}.`);
+  }
+
+  async function dealerPlay(){
+    holeDown = false;
+    renderDealer(true);
+    updateTotals(true);
+    await sleep(300);
+
+    while(totalHand(dealer) < 17){
+      const c = draw();
+      dealer.push(c);
+      await dealToDealer(c, {faceDown:false, animate:true});
+      updateTotals(true);
+      await sleep(220);
+    }
+  }
+
+  async function finishRound(dealerPlayed){
+    const dTot = dealerPlayed ? totalHand(dealer) : totalHand(dealer);
+    // settle payouts
+    for(const h of hands){
+      if(h.surrendered) continue;
+      const pTot = totalHand(h.cards);
+      if(pTot>21){
+        // lose, nothing added
+      }else if(dTot>21){
+        bankroll += h.bet * 2;
+      }else if(pTot > dTot){
+        bankroll += h.bet * 2;
+      }else if(pTot < dTot){
+        // lose
+      }else{
+        bankroll += h.bet;
+      }
+    }
+    bankEl.textContent = bankroll;
+    const net = bankroll - roundStartBankroll;
+    if(net > 0){
+      msg(`You won $${net}.`);
+    }else if(net < 0){
+      msg(`You lost $${-net}.`);
     }else{
-      nextStep();
+      msg("Push / break even.");
     }
   }
 
   // Wire up
-  dealBtn.addEventListener("click", startRound);
-  hitBtn.addEventListener("click", doHit);
-  standBtn.addEventListener("click", doStand);
-  doubleBtn.addEventListener("click", doDouble);
-  splitBtn.addEventListener("click", doSplit);
-  surrenderBtn.addEventListener("click", doSurrender);
-  newShoeBtn.addEventListener("click", ()=>{ if(!inRound){ freshShoe(); renderAll(); } });
+  dealBtn.onclick = startRound;
+  hitBtn.onclick = hit;
+  standBtn.onclick = stand;
+  doubleBtn.onclick = doubleDown;
+  splitBtn.onclick = splitHand;
+  surrenderBtn.onclick = surrender;
 
-  betInput.addEventListener("change", ()=>{
-    bet = Math.max(1, Math.floor(Number(betInput.value)||10));
-    betInput.value = bet;
-    betDisp.textContent = bet;
-  });
-
-  moreBtn.addEventListener("click", e=>{
+  moreBtn.onclick = e=>{
     e.stopPropagation();
     moreMenu.style.display = (moreMenu.style.display==="block" ? "none" : "block");
-  });
-  document.addEventListener("click", ()=>{
-    moreMenu.style.display = "none";
-  });
+  };
+  document.addEventListener("click", ()=>{ moreMenu.style.display="none"; });
+
+  newShoeBtn.onclick = ()=>{
+    if(!inRound){
+      freshShoe();
+      dealer = [];
+      hands = [];
+      buildHandsLayout();
+      dealerCardsEl.innerHTML = "";
+      updateTotals(false);
+      msg("");
+    }
+  };
+
+  betEl.onchange = ()=>{
+    baseBet = Math.max(1, Math.floor(Number(betEl.value)||10));
+    betEl.value = baseBet;
+    betDisp.textContent = baseBet;
+  };
 
   // boot
   freshShoe();
-  renderAll();
+  hands = [];
+  buildHandsLayout();
+  updateTotals(false);
+  msg("");
+  updateButtons();
 })();
 </script>
-<div id="backWrap" style="text-align:center; margin-top:20px;">
-  <a href="index.html" id="backBtn" style="font-size:16px; color:black; text-decoration:none;">
-    ⟵ Back
-  </a>
-</div>
 </body>
 </html>
