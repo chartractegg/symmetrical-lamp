@@ -213,25 +213,6 @@ function nextHandOrResolve() {
   }
 }
 
-export function createCardElement(card, { order = 0 } = {}) {
-  const el = document.createElement("div");
-  el.className = "card";
-  el.style.order = order;
-
-  const rank = document.createElement("div");
-  rank.className = "rank";
-  rank.textContent = card.rank;
-
-  const suit = document.createElement("div");
-  suit.className = "suit";
-  suit.textContent = card.suit;
-
-  el.appendChild(rank);
-  el.appendChild(suit);
-
-  return el;
-}
-
 export function createBackCard({ order = 0 } = {}) {
   const el = document.createElement("div");
   el.className = "card back";
