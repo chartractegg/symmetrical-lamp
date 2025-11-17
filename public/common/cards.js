@@ -37,30 +37,23 @@ export function handTotal(cards) {
 }
 
 /** Create a card DOM element */
-
-export function createCardElement(card, { order = 0 } = {}) {
+export function createCardElement(card, opts = {}) {
   const el = document.createElement("div");
-  el.className = "card";
-  el.style.order = order;
+  const { animate = false, order = 0, flip = false } = opts;
 
-  const rank = document.createElement("div");
-  rank.className = "rank";
-  rank.textContent = card.rank;
+  let classes = ["card"];
+  if (isRed(card.suit)) classes.push("red");
 
-  const suit = document.createElement("div");
-  suit.className = "suit";
-  suit.textContent = card.suit;
+  if (animate) classes.push("fly");
+  if (flip) classes.push("flip");
 
-  el.appendChild(rank);
-  el.appendChild(suit);
+  el.className = classes.join(" ");
+  el.textContent = card.rank + card.suit;
 
-  return el;
-}
+  if (animate && typeof order === "number") {
+    el.style.setProperty("--i", order);
+  }
 
-export function createBackCard({ order = 0 } = {}) {
-  const el = document.createElement("div");
-  el.className = "card back";
-  el.style.order = order;
   return el;
 }
 
