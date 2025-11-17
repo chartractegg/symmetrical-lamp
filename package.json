@@ -1,0 +1,1 @@
+{"name": "snake","type": "module","scripts": { "start": "node server.mjs" },"dependencies": { "express": "^4.19.2" }}
