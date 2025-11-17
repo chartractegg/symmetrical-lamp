@@ -14,32 +14,64 @@
     margin:0;
     background:var(--win);
     font:14px Tahoma, Verdana, Arial, sans-serif;
+  }
+
+  .desk{
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:10px;
+  }
+
+  .window{
+    width:min(900px, 100%);
+    border:2px solid var(--dark);
+    box-shadow:
+      inset -1px -1px 0 var(--dark),
+      inset  1px  1px 0 var(--light),
+      4px 4px 0 rgba(0,0,0,0.4);
+    background:var(--win);
+    display:flex;
+    flex-direction:column;
+  }
+
+  .titlebar{
+    background:linear-gradient(90deg,#02007a,#2a7bd8);
+    color:#fff;
+    padding:3px 6px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .titlebar span{
+    font-weight:700;
+  }
+  .sysbtns{
+    display:flex;
+    gap:2px;
+  }
+  .sysbtn{
+    width:18px; height:18px;
+    border:1px solid #000;
+    background:#c0c0c0;
+    box-shadow:
+      inset -1px -1px 0 #000,
+      inset  1px  1px 0 #fff;
+    font-size:11px;
     display:flex;
     align-items:center;
     justify-content:center;
   }
-  .window{
-    background:var(--win);
-    border:2px solid var(--dark);
-    box-shadow:
-      inset -1px -1px 0 var(--shadow),
-      inset  1px  1px 0 var(--light),
-      inset -2px -2px 0 var(--dark),
-      inset  2px  2px 0 var(--mid);
-    width:min(600px, 96vw);
-    padding:8px;
-  }
-  .titlebar{
-    background:linear-gradient(#000080,#0000a8);
-    color:#fff;
-    padding:3px 6px;
-    margin-bottom:6px;
+
+  .content{
     display:flex;
-    justify-content:space-between;
-    align-items:center;
-    font-weight:700;
+    padding:10px;
+    gap:10px;
   }
-  .frame{
+
+  .left{
+    flex:1.2;
     border:2px solid var(--shadow);
     box-shadow:
       inset -1px -1px 0 var(--dark),
@@ -58,32 +90,40 @@
     background:#000;
     color:#0f0;
     padding:6px;
-    margin-bottom:10px;
+    margin-bottom:8px;
     border:2px inset #333;
-    max-width:100%;
-    overflow:auto;
   }
+
   .intro{
+    background:#fff;
+    border:2px inset #999;
+    padding:6px 8px;
     margin-bottom:10px;
+    font-size:13px;
   }
-  .intro p{
-    margin:4px 0;
+
+  .right{
+    flex:1;
+    border:2px solid var(--shadow);
+    box-shadow:
+      inset -1px -1px 0 var(--dark),
+      inset  1px  1px 0 var(--light);
+    padding:10px;
+    background:var(--mid);
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
   }
+
   ul{
-    list-style-type:none;
-    padding-left:0;
-    margin:8px 0 4px 0;
+    list-style:none;
+    margin:0;
+    padding:0;
   }
   li{
-    margin:4px 0;
+    margin-bottom:6px;
   }
-  a{
-    color:#000080;
-    text-decoration:none;
-  }
-  a:hover{
-    text-decoration:underline;
-  }
+
   .link-btn{
     display:inline-block;
     padding:4px 10px;
@@ -92,64 +132,93 @@
     box-shadow:
       inset -1px -1px 0 var(--dark),
       inset  1px  1px 0 var(--light);
-    margin:2px 0;
+    text-decoration:none;
+    color:#000;
+    font-size:13px;
   }
   .link-btn:active{
     box-shadow:
       inset -1px -1px 0 var(--light),
       inset  1px  1px 0 var(--dark);
   }
+
   .footer{
-    margin-top:10px;
+    margin-top:12px;
     font-size:11px;
-    color:#333;
+    opacity:0.85;
+  }
+
+  @media (max-width:760px){
+    .content{
+      flex-direction:column;
+    }
   }
 </style>
 </head>
 <body>
-<div class="window">
-  <div class="titlebar">
-    <div>Symmetrical Lamp</div>
-    <div>Retro Games Hub</div>
-  </div>
-  <div class="frame">
-    <h1>Welcome to Symmetrical Lamp</h1>
-
-    <div class="ascii">
-      /----------------------\\
-      |   .-==-.             |
-      |  /  __  \\   Retro   |
-      |  | |  | |   Games    |
-      |  | |__| |   Arcade   |
-      |  \\      /           |
-      |   '----'   * * *     |
-      \\----------------------/
+<div class="desk">
+  <div class="window">
+    <div class="titlebar">
+      <span>Symmetrical Lamp — Retro Games</span>
+      <div class="sysbtns">
+        <div class="sysbtn">_</div>
+        <div class="sysbtn">□</div>
+        <div class="sysbtn">×</div>
+      </div>
     </div>
 
-    <div class="intro">
-      <p>Select a game to begin your extremely serious, high-stakes nostalgia session:</p>
-    </div>
+    <div class="content">
+      <div class="left">
+        <h1>Retro Game Launcher</h1>
+        <div class="ascii">
+  .-=-=-=-=-=-=-=-=-=-=-=-.
+  |  SYMMETRICAL   LAMP   |
+  |   retro game module   |
+  `-=-=-=-=-=-=-=-=-=-=-=-'
+        </div>
+        <div class="intro">
+          <p>Welcome to your extremely serious, highly professional retro arcade.</p>
+          <p>All games run in the browser and are best experienced while avoiding real responsibilities.</p>
+        </div>
+        <div style="font-size:12px;">
+          <p>• Arrow keys for Snake.</p>
+          <p>• Click cells for Minesweeper.</p>
+          <p>• Chips, hits, stands, splits &amp; surrenders for Blackjack.</p>
+          <p>• In Texas Hold'em, pick your number of CPU opponents and try not to get outplayed by JavaScript.</p>
+        </div>
+      </div>
 
-    <ul>
-      <li>
-        <a class="link-btn" href="snake.html">
-          ► Snake (NOTKIA style)
-        </a>
-      </li>
-      <li>
-        <a class="link-btn" href="minesweeper.html">
-          ► Minesweeper (Classic 90s desktop)
-        </a>
-      </li>
-      <li>
-        <a class="link-btn" href="blackjack/blackjack.html">
-          ► Blackjack (Retro Table)
-        </a>
-      </li>
-    </ul>
+      <div class="right">
+        <div>
+          <h2 style="font-size:14px; margin:0 0 8px 0;">Games</h2>
+          <ul>
+            <li>
+              <a class="link-btn" href="snake.html">
+                ► Snake (NOTKIA style)
+              </a>
+            </li>
+            <li>
+              <a class="link-btn" href="minesweeper.html">
+                ► Minesweeper (Classic 90s desktop)
+              </a>
+            </li>
+            <li>
+              <a class="link-btn" href="blackjack/blackjack.html">
+                ► Blackjack (Retro Table)
+              </a>
+            </li>
+            <li>
+              <a class="link-btn" href="holdem/holdem.html">
+                ► Texas Hold'em Poker
+              </a>
+            </li>
+          </ul>
+        </div>
 
-    <div class="footer">
-      <div>Tip: Use Back buttons inside games to return here.</div>
+        <div class="footer">
+          <div>Tip: Use Back buttons inside games to return here.</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
