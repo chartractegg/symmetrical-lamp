@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Snake — Retro LCD Edition</title>
+<style>
+  body {
+    background:#c0c0c0; /* Windows 98 silver */
+    margin:0;
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:"Courier New",monospace;
+  }
+
+  .snake-layout{
+    display:flex;
+    gap:16px;
+    align-items:center;
+    justify-content:center;
+    max-width:960px;
+    width:100%;
+    padding:10px;
+  }
+
+  .leaderboard-panel{
+    width:220px;
+    background:#dfdfdf;
+    border:2px solid #808080;
+    box-shadow:
+      inset -1px -1px 0 #000000,
+      inset  1px  1px 0 #ffffff,
+      3px 3px 0 rgba(0,0,0,0.35);
+    padding:8px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .leaderboard-panel h2{
+    font-size:14px;
+    margin:0 0 4px 0;
+  }
+  .leaderboard-panel small{
+    font-size:11px;
+    opacity:0.8;
+  }
+  #leaderboardList{
+    list-style:none;
+    margin:4px 0 0 0;
+    padding:0;
+    font-size:12px;
+    max-height:260px;
+    overflow-y:auto;
+    border:2px inset #b0b0b0;
+    background:#ffffff;
+  }
+  #leaderboardList li{
+    padding:2px 4px;
+    border-bottom:1px solid #e0e0e0;
+  }
+  #leaderboardList li:last-child{
+    border-bottom:none;
+  }
+
+  .game-column{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+
+  .screen {
+    background:#5a7751;
+    border:4px solid #3a4a3a;
+    box-shadow:
+      inset 2px 2px 0 #7f9f7f,
+      inset -2px -2px 0 #2f3f2f;
+    border-radius:10px;
+    width:75vw;
+    max-width:480px;
+    aspect-ratio:3/4;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    touch-action:manipulation;
+    position:relative;
+  }
+  canvas {
+    background:#5a7751;
+    width:95%;
+    height:95%;
+    display:block;
+  }
+  .score {
+    position:absolute;
+    bottom:8px;
+    right:10px;
+    color:#e0ffe0;
+    font-size:14px;
+  }
+
+  .backwrap{
+    text-align:center;
+    margin-top:4px;
+  }
+  .backbtn{
+    font:14px Tahoma, Arial, sans-serif;
+    padding:4px 18px;
+    background:#c0c0c0;
+    border:2px solid #808080;
+    box-shadow:
+      inset -1px -1px 0 #000000,
+      inset  1px  1px 0 #ffffff;
+    cursor:pointer;
+    color:#000;
+    text-decoration:none;
+    display:inline-block;
+  }
+  .backbtn:active{
+    box-shadow:
+      inset -1px -1px 0 #ffffff,
+      inset  1px  1px 0 #000000;
+  }
+
+  @media (max-width:720px){
+    .snake-layout{
+      flex-direction:column;
+      height:100vh;
+    }
+    .leaderboard-panel{
+      width:90%;
+      max-width:360px;
+      order:2;
+    }
+    .game-column{
+      order:1;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="snake-layout">
+  <div class="leaderboard-panel">
+    <h2>Snake High Scores</h2>
+    <small>Stored in this browser only.</small>
+    <ul id="leaderboardList">
+      <!-- populated by JS -->
+    </ul>
+  </div>
+
+  <div class="game-column">
+    <div class="screen" id="screen">
+      <canvas id="game" width="240" height="320"></canvas>
+      <div class="score">Score: <span id="score">0</span></div>
+    </div>
+    <div class="backwrap">
+      <a href="index.html" class="backbtn">⟵ Back</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const canvas  = document.getElementById('game');
+  const ctx     = canvas.getContext('2d');
+  const scoreEl = document.getElementById('score');
+  const screen  = document.getElementById('screen');
+  const lbList  = document.getElementById('leaderboardList');
+
+  const cell = 10;
+  const rows = canvas.height / cell;
+  const cols = canvas.width  / cell;
+
+  const LB_KEY = 'snakeHighScores_v1';
+
+  let snake, dir, apple, score, speed, interval, pendingDir;
+
+  // ===== Leaderboard helpers (localStorage, per browser) =====
+  function loadHighScores(){
+    try{
+      const raw = localStorage.getItem(LB_KEY);
+      if(!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    }catch(e){
+      return [];
+    }
+  }
+
+  function saveHighScores(list){
+    try{
+      localStorage.setItem(LB_KEY, JSON.stringify(list));
+    }catch(e){
+      // ignore storage errors (private mode, etc.)
+    }
+  }
+
+  function updateLeaderboard(){
+    const scores = loadHighScores();
+    lbList.innerHTML = '';
+
+    if(!scores.length){
+      const li = document.createElement('li');
+      li.textContent = 'No scores yet. Go eat some pixels.';
+      lbList.appendChild(li);
+      return;
+    }
+
+    scores.forEach((entry, idx) => {
+      const li = document.createElement('li');
+      const date = entry.when ? new Date(entry.when) : null;
+      let dateStr = '';
+      if(date && !isNaN(date)){
+        dateStr = ' — ' + date.toLocaleDateString();
+      }
+      li.textContent = `${idx+1}. ${entry.score}${dateStr}`;
+      lbList.appendChild(li);
+    });
+  }
+
+  function recordScore(value){
+    if(value <= 0) return;
+    let list = loadHighScores();
+    list.push({ score:value, when:new Date().toISOString() });
+    list.sort((a,b)=>b.score - a.score);
+    list = list.slice(0,10); // keep top 10
+    saveHighScores(list);
+  }
+
+  // ===== Game logic =====
+  function randomApple(){
+    // ensure apple doesn't spawn on top of the snake
+    let a;
+    do{
+      a = {
+        x: Math.floor(Math.random()*cols),
+        y: Math.floor(Math.random()*rows)
+      };
+    }while(snake && snake.some(s=>s.x===a.x && s.y===a.y));
+    return a;
+  }
+
+  function drawCell(x,y,color){
+    ctx.fillStyle = color;
+    ctx.fillRect(x*cell, y*cell, cell-1, cell-1);
+  }
+
+  function drawBoard(){
+    ctx.fillStyle = '#5a7751';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+
+  function loop(){
+    if(pendingDir){
+      // avoid instant 180° reversal
+      if(!(pendingDir.x === -dir.x && pendingDir.y === -dir.y)){
+        dir = pendingDir;
+      }
+      pendingDir = null;
+    }
+
+    const head = {
+      x: (snake[0].x + dir.x + cols) % cols,
+      y: (snake[0].y + dir.y + rows) % rows
+    };
+
+    // collision with self
+    if(snake.some(s => s.x === head.x && s.y === head.y)){
+      gameOver();
+      return;
+    }
+
+    snake.unshift(head);
+
+    if(head.x === apple.x && head.y === apple.y){
+      score++;
+      scoreEl.textContent = score;
+      apple = randomApple();
+      // speed up a bit, but not insane
+      if(speed > 60){
+        clearInterval(interval);
+        speed -= 5;
+        interval = setInterval(loop, speed);
+      }
+    }else{
+      snake.pop();
+    }
+
+    drawBoard();
+    drawCell(apple.x, apple.y, '#aaffaa');
+    for(const seg of snake){
+      drawCell(seg.x, seg.y, '#003300');
+    }
+  }
+
+  function drawGameOverOverlay(){
+    ctx.fillStyle = '#4a5f4a';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#aaffaa';
+    ctx.font = "16px 'Courier New'";
+    ctx.fillText('GAME OVER', 65, 150);
+    ctx.fillText('Tap or Enter', 65, 170);
+  }
+
+  function gameOver(){
+    clearInterval(interval);
+    recordScore(score);
+    updateLeaderboard();
+    drawGameOverOverlay();
+    document.addEventListener('keydown', restartOnEnter, { once:true });
+    screen.addEventListener('touchstart', restartOnTouch, { once:true });
+  }
+
+  function restartOnEnter(e){
+    if(e.key === 'Enter') start();
+  }
+  function restartOnTouch(){
+    start();
+  }
+
+  function start(){
+    snake = [{ x: Math.floor(cols/2), y: Math.floor(rows/2) }];
+    dir   = { x:1, y:0 };
+    apple = randomApple();
+    score = 0;
+    scoreEl.textContent = 0;
+    speed = 150;
+    pendingDir = null;
+
+    drawBoard();
+    clearInterval(interval);
+    interval = setInterval(loop, speed);
+  }
+
+  // ===== Controls (keyboard + touch) =====
+  document.addEventListener('keydown', e => {
+    switch(e.key){
+      case 'ArrowUp':
+      case 'w':
+      case 'W':
+        if(dir.y === 0) pendingDir = { x:0, y:-1 };
+        break;
+      case 'ArrowDown':
+      case 's':
+      case 'S':
+        if(dir.y === 0) pendingDir = { x:0, y: 1 };
+        break;
+      case 'ArrowLeft':
+      case 'a':
+      case 'A':
+        if(dir.x === 0) pendingDir = { x:-1, y:0 };
+        break;
+      case 'ArrowRight':
+      case 'd':
+      case 'D':
+        if(dir.x === 0) pendingDir = { x: 1, y:0 };
+        break;
+      default:
+        break;
+    }
+  });
+
+  screen.addEventListener('touchstart', e => {
+    const r = screen.getBoundingClientRect();
+    const t = e.touches[0];
+    const x = t.clientX - r.left;
+    const y = t.clientY - r.top;
+    const w = r.width;
+    const h = r.height;
+    const cx = w/2;
+    const cy = h/2;
+    const dx = x - cx;
+    const dy = y - cy;
+    const ax = Math.abs(dx);
+    const ay = Math.abs(dy);
+
+    let ndir = { ...dir };
+    if(ax > ay){
+      ndir = dx < 0 ? {x:-1,y:0} : {x:1,y:0};
+    }else{
+      ndir = dy < 0 ? {x:0,y:-1} : {x:0,y:1};
+    }
+    if(!(ndir.x === -dir.x && ndir.y === -dir.y) && pendingDir === null){
+      pendingDir = ndir;
+    }
+  });
+
+  // boot
+  updateLeaderboard();
+  start();
+})();
+</script>
+
+</body>
+</html>

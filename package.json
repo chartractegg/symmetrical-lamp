@@ -1,1 +1,6 @@
-{"name": "snake","type": "module","scripts": { "start": "node server.mjs" },"dependencies": { "express": "^4.19.2" }}
+{
+  "name": "snake",
+  "type": "module",
+  "scripts": { "start": "node server.mjs" },
+  "dependencies": { "express": "^4.19.2" }
+}

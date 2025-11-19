@@ -1,0 +1,228 @@
+/* ============================================================
+   Blackjack Game — Retro Styling
+   Applies on top of retro-ui.css
+   ============================================================ */
+
+.table-area {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 12px;
+}
+
+@media (max-width: 820px) {
+  .table-area {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================
+   FELT TABLE
+   ============================ */
+.felt {
+  background: var(--felt);
+  border-radius: 8px;
+  padding: 14px;
+  border: 2px solid #2f3f2f;
+  box-shadow:
+      inset -1px -1px 0 #2f3f2f,
+      inset 1px 1px 0 #000000;
+  min-height: 420px;
+}
+
+/* ============================
+   HEADINGS & TOTALS
+   ============================ */
+.heading {
+  font-weight: bold;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tot {
+  background: #000;
+  color: #ff1a1a;
+  padding: 2px 6px;
+  border: 2px inset #333;
+  min-width: 24px;
+  text-align: center;
+  font-family: "Courier New", monospace;
+}
+
+/* ============================
+   CARDS & ANIMATION CONTAINERS
+   ============================ */
+.cards {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* CARDS APPEARANCE */
+.card {
+  width: 50px;
+  height: 68px;
+  border: 1px solid #999;
+  border-radius: 3px;
+  background: #fff;
+  display: grid;
+  place-items: center;
+  font-family: "Courier New", monospace;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+  position: relative;
+}
+
+.card.red {
+  color: var(--red);
+}
+
+.card.back {
+  background: #d9d9d9;
+  border-style: double;
+}
+
+/* DEAL-IN FLY ANIMATION */
+.card.fly {
+  animation: dealIn 260ms ease-out forwards;
+}
+
+@keyframes dealIn {
+  from {
+    transform: translate(-70px, -40px) scale(0.88);
+    opacity: 0;
+  }
+  to {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* FLIP ANIMATION FOR HOLE CARD */
+.card.flip {
+  animation: flipReveal 320ms ease-out forwards;
+  transform-origin: center;
+}
+
+@keyframes flipReveal {
+  0% { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+
+/* ============================
+   PLAYER HANDS
+   ============================ */
+.hands {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.hand {
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid var(--shadow);
+  box-shadow:
+      inset -1px -1px 0 var(--dark),
+      inset 1px 1px 0 var(--light);
+  border-radius: 4px;
+  padding: 6px;
+  transition: background 0.15s linear;
+}
+
+.hand.active {
+  outline: 2px dotted #000;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ============================
+   SIDEBAR
+   ============================ */
+.side {
+  display: grid;
+  gap: 12px;
+}
+
+.group {
+  background: var(--mid);
+  border: 2px solid var(--shadow);
+  box-shadow:
+      inset -1px -1px 0 var(--dark),
+      inset 1px 1px 0 var(--light);
+  padding: 10px;
+}
+
+.group button {
+  margin: 2px 4px;
+}
+
+/* MORE MENU FOR DOUBLE / SPLIT / SURRENDER */
+.morewrap {
+  position: relative;
+  display: inline-block;
+}
+
+.moremenu {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  min-width: 170px;
+  display: none;
+  z-index: 12;
+  background: var(--win);
+  border: 2px solid var(--dark);
+  box-shadow:
+      4px 4px 0 rgba(0,0,0,0.25),
+      inset -1px -1px 0 var(--shadow),
+      inset 1px 1px 0 var(--light);
+}
+
+.moremenu button {
+  width: 100%;
+  text-align: left;
+  padding: 6px 10px;
+  border: none;
+  border-bottom: 1px solid #aaa;
+}
+
+.moremenu button:last-child {
+  border-bottom: none;
+}
+
+/* ============================
+   MESSAGES
+   ============================ */
+.msg {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #000;
+}
+
+/* ============================
+   BACK BUTTON
+   ============================ */
+.backwrap {
+  text-align: center;
+  margin-top: 14px;
+}
+
+.backbtn {
+  display: inline-block;
+  padding: 6px 22px;
+  background: var(--win);
+  border: 2px solid var(--shadow);
+  text-decoration: none;
+  color: #000;
+  font: 14px Tahoma, Arial;
+  box-shadow:
+      inset -1px -1px 0 var(--dark),
+      inset 1px 1px 0 var(--light);
+}
+
+.backbtn:active {
+  box-shadow:
+      inset -1px -1px 0 var(--light),
+      inset 1px 1px 0 var(--dark);
+}
