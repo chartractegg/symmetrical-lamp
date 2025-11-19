@@ -2,14 +2,23 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Symmetrical Lamp — Retro Games</title>
+<title>Symmetrical Lamp — Retro Arcade</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   :root{
-    --win:#c0c0c0; --light:#ffffff; --mid:#dfdfdf; --shadow:#808080; --dark:#000000;
+    --win:#c0c0c0;
+    --light:#ffffff;
+    --mid:#dfdfdf;
+    --shadow:#808080;
+    --dark:#000000;
   }
+
   *{box-sizing:border-box;}
-  html,body{height:100%;}
+
+  html,body{
+    height:100%;
+  }
+
   body{
     margin:0;
     background:var(--win);
@@ -25,13 +34,13 @@
   }
 
   .window{
-    width:min(900px, 100%);
+    width:min(750px, 100%);
     border:2px solid var(--dark);
+    background:var(--win);
     box-shadow:
       inset -1px -1px 0 var(--dark),
       inset  1px  1px 0 var(--light),
       4px 4px 0 rgba(0,0,0,0.4);
-    background:var(--win);
     display:flex;
     flex-direction:column;
   }
@@ -39,50 +48,34 @@
   .titlebar{
     background:linear-gradient(90deg,#02007a,#2a7bd8);
     color:#fff;
-    padding:3px 6px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-  }
-  .titlebar span{
+    padding:4px 8px;
     font-weight:700;
-  }
-  .sysbtns{
-    display:flex;
-    gap:2px;
-  }
-  .sysbtn{
-    width:18px; height:18px;
-    border:1px solid #000;
-    background:#c0c0c0;
-    box-shadow:
-      inset -1px -1px 0 #000,
-      inset  1px  1px 0 #fff;
-    font-size:11px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    font-size:14px;
   }
 
   .content{
+    padding:12px;
     display:flex;
-    padding:10px;
-    gap:10px;
+    gap:12px;
+    flex-wrap:wrap;
   }
 
-  .left{
-    flex:1.2;
+  .left,
+  .right{
+    flex:1 1 260px;
     border:2px solid var(--shadow);
     box-shadow:
       inset -1px -1px 0 var(--dark),
       inset  1px  1px 0 var(--light);
-    padding:10px;
     background:var(--mid);
+    padding:10px;
   }
+
   h1{
+    margin:0 0 8px 0;
     font-size:18px;
-    margin:0 0 10px 0;
   }
+
   .ascii{
     font-family:"Courier New", monospace;
     font-size:11px;
@@ -98,21 +91,8 @@
     background:#fff;
     border:2px inset #999;
     padding:6px 8px;
-    margin-bottom:10px;
     font-size:13px;
-  }
-
-  .right{
-    flex:1;
-    border:2px solid var(--shadow);
-    box-shadow:
-      inset -1px -1px 0 var(--dark),
-      inset  1px  1px 0 var(--light);
-    padding:10px;
-    background:var(--mid);
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
+    margin-bottom:8px;
   }
 
   ul{
@@ -120,6 +100,7 @@
     margin:0;
     padding:0;
   }
+
   li{
     margin-bottom:6px;
   }
@@ -135,90 +116,87 @@
     text-decoration:none;
     color:#000;
     font-size:13px;
+    cursor:pointer;
   }
+
   .link-btn:active{
     box-shadow:
       inset -1px -1px 0 var(--light),
       inset  1px  1px 0 var(--dark);
   }
 
-  .footer{
-    margin-top:12px;
+  .game-note{
     font-size:11px;
     opacity:0.85;
+    margin-top:10px;
   }
 
-  @media (max-width:760px){
-    .content{
-      flex-direction:column;
-    }
+  .footer{
+    border-top:1px solid #aaa;
+    padding:6px 10px;
+    font-size:11px;
+    background:#dfdfdf;
+    display:flex;
+    justify-content:space-between;
+    gap:6px;
+    flex-wrap:wrap;
   }
 </style>
 </head>
+
 <body>
 <div class="desk">
   <div class="window">
     <div class="titlebar">
-      <span>Symmetrical Lamp — Retro Games</span>
-      <div class="sysbtns">
-        <div class="sysbtn">_</div>
-        <div class="sysbtn">□</div>
-        <div class="sysbtn">×</div>
-      </div>
+      Symmetrical Lamp — Retro Arcade
     </div>
 
     <div class="content">
       <div class="left">
-        <h1>Retro Game Launcher</h1>
+        <h1>Game Launcher</h1>
+
         <div class="ascii">
-  .-=-=-=-=-=-=-=-=-=-=-=-.
-  |  SYMMETRICAL   LAMP   |
-  |   retro game module   |
-  `-=-=-=-=-=-=-=-=-=-=-=-'
+  .-=-=-=-=-=-=-=-=-=-=-.
+  |  SYMMETRICAL LAMP   |
+  |    retro arcade     |
+  `-=-=-=-=-=-=-=-=-=-=-'
         </div>
+
         <div class="intro">
-          <p>Welcome to your extremely serious, highly professional retro arcade.</p>
-          <p>All games run in the browser and are best experienced while avoiding real responsibilities.</p>
+          <p>Welcome to your extremely serious, fully overbuilt browser casino / time-waster hub.</p>
+          <p>Each game now lives in its own HTML + JS file under <code>/public</code>, so nothing bleeds into anything else.</p>
         </div>
+
         <div style="font-size:12px;">
-          <p>• Arrow keys for Snake.</p>
-          <p>• Click cells for Minesweeper.</p>
-          <p>• Chips, hits, stands, splits &amp; surrenders for Blackjack.</p>
-          <p>• In Texas Hold'em, pick your number of CPU opponents and try not to get outplayed by JavaScript.</p>
+          <p>• <b>Blackjack</b> – single-deck style, doubles allowed.</p>
+          <p>• <b>Baccarat</b> – full third-card rules, banker commission.</p>
+          <p>• <b>Texas Hold'em</b> – showdown simulator vs CPUs.</p>
+          <p>• <b>Snake</b> – canvas-based, local high scores.</p>
+          <p>• <b>Minesweeper</b> – classic grid with real chord/flag logic.</p>
+          <p>• <b>Solitaire</b> – Draw-3 Klondike with drag-and-drop.</p>
         </div>
       </div>
 
       <div class="right">
-        <div>
-          <h2 style="font-size:14px; margin:0 0 8px 0;">Games</h2>
-          <ul>
-            <li>
-              <a class="link-btn" href="snake.html">
-                ► Snake (NOTKIA style)
-              </a>
-            </li>
-            <li>
-              <a class="link-btn" href="minesweeper.html">
-                ► Minesweeper (Classic 90s desktop)
-              </a>
-            </li>
-            <li>
-              <a class="link-btn" href="blackjack/blackjack.html">
-                ► Blackjack (Retro Table)
-              </a>
-            </li>
-            <li>
-              <a class="link-btn" href="holdem/holdem.html">
-                ► Texas Hold'em Poker
-              </a>
-            </li>
-          </ul>
-        </div>
+        <h2 style="font-size:15px; margin:0 0 8px 0;">Games</h2>
+        <ul>
+          <li><a class="link-btn" href="blackjack.html">► Blackjack</a></li>
+          <li><a class="link-btn" href="baccarat.html">► Baccarat</a></li>
+          <li><a class="link-btn" href="holdem.html">► Texas Hold'em Poker</a></li>
+          <li><a class="link-btn" href="snake.html">► Snake</a></li>
+          <li><a class="link-btn" href="minesweeper.html">► Minesweeper</a></li>
+          <li><a class="link-btn" href="solitaire.html">► Solitaire (Draw 3)</a></li>
+        </ul>
 
-        <div class="footer">
-          <div>Tip: Use Back buttons inside games to return here.</div>
+        <div class="game-note">
+          Tip: All links assume this file lives in <code>/public/index.html</code> and the games in the same folder.
         </div>
       </div>
+    </div>
+
+    <div class="footer">
+      <span>Symmetrical Lamp Retro Module</span>
+      <span>Now with separate HTML/JS per game so Render stops losing its mind.</span>
     </div>
   </div>
 </div>
