@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Solitaire — Symmetrical Lamp</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<style>
+  body{
+    margin:0;
+    background:#2f4f2f;
+    font-family:Tahoma, Arial, sans-serif;
+    user-select:none;
+  }
+  .desk{
+    height:100vh;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:10px;
+  }
+  .window{
+    width:min(1100px,100%);
+    height:min(95vh,900px);
+    background:#c0c0c0;
+    border:2px solid #000;
+    box-shadow:
+      inset -1px -1px 0 #000,
+      inset  1px  1px 0 #fff,
+      4px 4px 0 rgba(0,0,0,0.4);
+    display:flex;
+    flex-direction:column;
+  }
+  .titlebar{
+    background:linear-gradient(90deg,#02007a,#2a7bd8);
+    padding:4px 8px;
+    color:#fff;
+    font-weight:bold;
+  }
+  #gameArea{
+    flex:1;
+    position:relative;
+    padding:14px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    overflow:hidden;
+  }
+
+  /* CARD LAYOUT */
+  .top-row,
+  .tableau-row{
+    display:flex;
+    gap:14px;
+    height:auto;
+  }
+
+  .pile{
+    width:80px;
+    height:112px;
+    border-radius:6px;
+    position:relative;
+  }
+  .pile.foundation{
+    border:2px dashed rgba(255,255,255,0.4);
+  }
+  .pile.stock{
+    border:2px solid rgba(0,0,0,0.3);
+  }
+  .pile.waste{
+    border:2px solid rgba(0,0,0,0.3);
+  }
+  .pile.tableau{
+    width:80px;
+    min-height:112px;
+    border-radius:6px;
+    border:2px dashed rgba(255,255,255,0.35);
+  }
+
+  /* CARDS */
+  .card{
+    width:80px;
+    height:112px;
+    border-radius:6px;
+    border:2px solid #000;
+    background:#fff;
+    font-family:"Courier New", monospace;
+    font-weight:bold;
+    font-size:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:absolute;
+    box-shadow:1px 1px 0 rgba(0,0,0,0.5);
+    cursor:pointer;
+    transition:transform 0.12s ease;
+  }
+  .card.red{
+    color:#b00000;
+  }
+  .card.back{
+    background:repeating-linear-gradient(
+      45deg,
+      #003, #003 4px,
+      #0af 4px, #0af 8px
+    );
+    border-color:#001133;
+  }
+  .dragging{
+    pointer-events:none;
+    transform:scale(1.08);
+    z-index:9999;
+  }
+
+  /* BACK BUTTON */
+  .backwrap{
+    display:flex;
+    justify-content:center;
+    margin-bottom:10px;
+  }
+  .backbtn{
+    padding:4px 10px;
+    background:#c0c0c0;
+    border:2px solid #808080;
+    box-shadow:
+      inset -1px -1px 0 #000,
+      inset  1px  1px 0 #fff;
+    cursor:pointer;
+    text-decoration:none;
+    color:#000;
+    font-size:13px;
+  }
+</style>
+</head>
+
+<body>
+<div class="desk">
+  <div class="window">
+    <div class="titlebar">Solitaire — Draw 3 Klondike</div>
+
+    <div id="gameArea">
+      <!-- TOP ROW: STOCK | WASTE | FOUNDATIONS -->
+      <div class="top-row">
+        <div id="stock" class="pile stock"></div>
+        <div id="waste" class="pile waste"></div>
+
+        <div style="flex:1"></div>
+
+        <div id="foundation0" class="pile foundation"></div>
+        <div id="foundation1" class="pile foundation"></div>
+        <div id="foundation2" class="pile foundation"></div>
+        <div id="foundation3" class="pile foundation"></div>
+      </div>
+
+      <!-- TABLEAU -->
+      <div class="tableau-row">
+        <div id="tableau0" class="pile tableau"></div>
+        <div id="tableau1" class="pile tableau"></div>
+        <div id="tableau2" class="pile tableau"></div>
+        <div id="tableau3" class="pile tableau"></div>
+        <div id="tableau4" class="pile tableau"></div>
+        <div id="tableau5" class="pile tableau"></div>
+        <div id="tableau6" class="pile tableau"></div>
+      </div>
+
+    </div>
+
+    <div class="backwrap">
+      <a href="index.html" class="backbtn">⟵ Back to Menu</a>
+    </div>
+
+  </div>
+</div>
+
+<script src="solitaire.js"></script>
+</body>
+</html>
