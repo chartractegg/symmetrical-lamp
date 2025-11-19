@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Baccarat — Symmetrical Lamp</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+<div class="desk">
+  <div class="window">
+    <div class="titlebar">Baccarat</div>
+
+    <div class="content">
+      <div class="bac-table">
+        <div class="bac-header">
+          <div>Bank: $<span id="bacBank">1000</span></div>
+
+          <div class="bac-controls">
+            <label>Bet:</label>
+            <input id="bacBet" type="number" min="5" step="5" value="50" />
+
+            <label><input type="radio" name="bacSide" value="player" checked> Player</label>
+            <label><input type="radio" name="bacSide" value="banker"> Banker</label>
+            <label><input type="radio" name="bacSide" value="tie"> Tie</label>
+
+            <button id="bacDealBtn">Deal</button>
+          </div>
+        </div>
+
+        <div class="bac-row">
+          <div class="bac-label">Player</div>
+          <div class="bac-cards" id="bacPlayerCards"></div>
+          <div class="bac-total" id="bacPlayerTotal"></div>
+        </div>
+
+        <div class="bac-row">
+          <div class="bac-label">Banker</div>
+          <div class="bac-cards" id="bacBankerCards"></div>
+          <div class="bac-total" id="bacBankerTotal"></div>
+        </div>
+
+        <div class="bac-msg" id="bacMessage"></div>
+      </div>
+
+      <div class="backwrap">
+        <a class="backbtn" href="index.html">⟵ Back to Menu</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="games/baccarat.js"></script>
+</body>
+</html>
