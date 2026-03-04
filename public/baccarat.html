@@ -4,53 +4,397 @@
 <meta charset="utf-8" />
 <title>Baccarat — Symmetrical Lamp</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="stylesheet" href="style.css" />
+<style>
+  :root{
+    --win:#c0c0c0; --light:#ffffff; --mid:#dfdfdf; --shadow:#808080; --dark:#000000;
+    --felt:#1a4a28; --red:#b00000;
+  }
+  *{box-sizing:border-box; user-select:none}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--win); color:#000;
+    font:14px/1 Tahoma, Verdana, Arial, sans-serif;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .window{
+    background:var(--win); border:2px solid var(--dark);
+    box-shadow:
+      inset -1px -1px 0 var(--shadow), inset 1px 1px 0 var(--light),
+      inset -2px -2px 0 var(--dark), inset 2px 2px 0 var(--mid);
+    padding:8px; width:min(96vw, 700px);
+  }
+  .titlebar{
+    background:linear-gradient(#000080,#0000a8); color:#fff;
+    padding:3px 6px; margin-bottom:6px;
+    display:flex; justify-content:space-between; align-items:center;
+    font-weight:700;
+  }
+  .frame{
+    border:2px solid var(--shadow);
+    box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 var(--light);
+    padding:8px; background:var(--mid);
+  }
+
+  /* Top panel */
+  .panel{
+    display:flex; gap:8px; flex-wrap:wrap;
+    align-items:center; justify-content:space-between;
+    padding:6px; background:var(--mid);
+    border:2px solid var(--shadow);
+    box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 var(--light);
+    margin-bottom:8px;
+  }
+  .badge{
+    min-width:120px; text-align:center; font-weight:700;
+    background:#6b0000; color:#ff1a1a;
+    font-family:"Courier New", monospace; letter-spacing:1px;
+    padding:4px 8px; border:2px solid var(--dark);
+    box-shadow: inset 0 1px 0 #3d0000, inset 0 -1px 0 #3d0000,
+                inset 1px 0 0 #3d0000, inset -1px 0 0 #3d0000;
+  }
+  .controls{
+    display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+  }
+  .label{ font-weight:700 }
+  input[type=number]{
+    width:72px; background:var(--win); border:2px solid var(--shadow); padding:2px 4px;
+    box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 var(--light);
+    font:14px/1 Tahoma, Arial;
+  }
+  .radio-label{
+    display:flex; align-items:center; gap:3px; cursor:pointer; font-size:13px;
+  }
+
+  /* Table felt */
+  .felt{
+    background:var(--felt); border-radius:8px; padding:14px 16px;
+    border:2px solid #0c2e16;
+    box-shadow: inset -1px -1px 0 #0c2e16, inset 1px 1px 0 #000;
+    display:flex; flex-direction:column; gap:14px;
+  }
+
+  /* Card rows */
+  .bac-row{
+    display:flex; align-items:center; gap:12px;
+  }
+  .bac-side-label{
+    width:68px; font-weight:700; color:#d0f0d0; font-size:12px;
+    text-transform:uppercase; letter-spacing:1px; flex-shrink:0;
+  }
+  .bac-cards{
+    flex:1; display:flex; gap:8px; flex-wrap:wrap;
+    min-height:76px; align-items:flex-start;
+  }
+  .bac-total-box{
+    width:50px; text-align:center;
+    background:#000; color:#ff1a1a;
+    font:700 22px/1 "Courier New", monospace;
+    padding:4px 6px; border:2px inset #333;
+    min-height:36px; display:grid; place-items:center;
+    flex-shrink:0;
+  }
+
+  .divider{
+    border:0; height:1px;
+    background:#0c2e16; box-shadow:0 1px 0 #2a6a3a;
+    margin:0;
+  }
+
+  /* Cards */
+  .card{
+    width:52px; height:72px;
+    border:2px solid #aaa; border-radius:3px;
+    background:#fff; color:#000;
+    display:flex; align-items:center; justify-content:center;
+    font-family:"Courier New", monospace; font-weight:700; font-size:14px;
+    box-shadow:1px 1px 0 rgba(0,0,0,0.3);
+    flex-shrink:0;
+  }
+  .card.red{ color:var(--red); }
+  .card.deal-in{
+    animation:dealIn 220ms ease-out forwards;
+  }
+  @keyframes dealIn{
+    from{ transform:translate(-30px,-20px) scale(0.8); opacity:0; }
+    to{ transform:translate(0,0) scale(1); opacity:1; }
+  }
+
+  /* Message */
+  .msg-area{
+    text-align:center; min-height:32px; display:flex;
+    align-items:center; justify-content:center;
+  }
+  .msg{
+    font-weight:700; font-size:15px; color:#fff;
+    background:rgba(0,0,0,0.55); border-radius:4px;
+    padding:5px 14px; display:inline-block;
+    border:1px solid rgba(255,255,255,0.15);
+  }
+  .msg.win{ color:#ffe066; }
+  .msg.lose{ color:#ff8080; }
+  .msg.push{ color:#aaaaff; }
+
+  /* Buttons */
+  button{
+    background:var(--win); border:2px solid var(--shadow); padding:6px 12px; cursor:pointer;
+    box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 var(--light);
+    font:14px/1 Tahoma, Arial;
+  }
+  button:active:not(:disabled){
+    box-shadow: inset -1px -1px 0 var(--light), inset 1px 1px 0 var(--dark);
+  }
+  button:disabled{ color:#666; cursor:not-allowed; opacity:0.6; }
+
+  .info{
+    font-size:11px; color:#90b890; text-align:center; margin-top:6px;
+  }
+
+  .backwrap{ text-align:center; margin-top:12px; }
+  .backbtn{
+    font:14px Tahoma, Arial; padding:6px 22px;
+    background:var(--win); border:2px solid var(--shadow);
+    box-shadow: inset -1px -1px 0 var(--dark), inset 1px 1px 0 var(--light);
+    cursor:pointer; text-decoration:none; color:#000; display:inline-block;
+  }
+  .backbtn:active{
+    box-shadow: inset -1px -1px 0 var(--light), inset 1px 1px 0 var(--dark);
+  }
+
+  @media(max-width:500px){
+    .panel{ flex-direction:column; align-items:flex-start; }
+    .controls{ flex-wrap:wrap; }
+  }
+</style>
 </head>
-
 <body>
-<div class="desk">
-  <div class="window">
-    <div class="titlebar">Baccarat</div>
-
-    <div class="content">
-      <div class="bac-table">
-        <div class="bac-header">
-          <div>Bank: $<span id="bacBank">1000</span></div>
-
-          <div class="bac-controls">
-            <label>Bet:</label>
-            <input id="bacBet" type="number" min="5" step="5" value="50" />
-
-            <label><input type="radio" name="bacSide" value="player" checked> Player</label>
-            <label><input type="radio" name="bacSide" value="banker"> Banker</label>
-            <label><input type="radio" name="bacSide" value="tie"> Tie</label>
-
-            <button id="bacDealBtn">Deal</button>
-          </div>
-        </div>
-
-        <div class="bac-row">
-          <div class="bac-label">Player</div>
-          <div class="bac-cards" id="bacPlayerCards"></div>
-          <div class="bac-total" id="bacPlayerTotal"></div>
-        </div>
-
-        <div class="bac-row">
-          <div class="bac-label">Banker</div>
-          <div class="bac-cards" id="bacBankerCards"></div>
-          <div class="bac-total" id="bacBankerTotal"></div>
-        </div>
-
-        <div class="bac-msg" id="bacMessage"></div>
+<div class="window">
+  <div class="titlebar">
+    <span>Baccarat</span><span>Punto Banco · 8 Decks</span>
+  </div>
+  <div class="frame">
+    <div class="panel">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <div class="badge">BANK $<span id="bank">1000</span></div>
+        <div class="badge">BET $<span id="betDisp">50</span></div>
       </div>
-
-      <div class="backwrap">
-        <a class="backbtn" href="index.html">⟵ Back to Menu</a>
+      <div class="controls">
+        <span class="label">Bet $</span>
+        <input id="bet" type="number" min="1" step="5" value="50">
+        <label class="radio-label"><input type="radio" name="side" value="player" checked> Player</label>
+        <label class="radio-label"><input type="radio" name="side" value="banker"> Banker</label>
+        <label class="radio-label"><input type="radio" name="side" value="tie"> Tie</label>
+        <button id="dealBtn">Deal</button>
       </div>
     </div>
+
+    <div class="felt">
+      <div class="bac-row">
+        <div class="bac-side-label">Player</div>
+        <div class="bac-cards" id="playerCards"></div>
+        <div class="bac-total-box" id="playerTotal"></div>
+      </div>
+      <hr class="divider">
+      <div class="bac-row">
+        <div class="bac-side-label">Banker</div>
+        <div class="bac-cards" id="bankerCards"></div>
+        <div class="bac-total-box" id="bankerTotal"></div>
+      </div>
+      <div class="msg-area" id="msgArea"></div>
+    </div>
+
+    <div class="info">Player pays 1:1 &nbsp;·&nbsp; Banker pays 0.95:1 &nbsp;·&nbsp; Tie pays 8:1</div>
+  </div>
+
+  <div class="backwrap">
+    <a href="index.html" class="backbtn">⟵ Back</a>
   </div>
 </div>
 
-<script src="games/baccarat.js"></script>
+<script>
+(function(){
+  const SUITS = ["♠","♥","♦","♣"];
+  const RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+
+  const bankEl      = document.getElementById("bank");
+  const betEl       = document.getElementById("bet");
+  const betDispEl   = document.getElementById("betDisp");
+  const dealBtn     = document.getElementById("dealBtn");
+  const playerCardsEl = document.getElementById("playerCards");
+  const bankerCardsEl = document.getElementById("bankerCards");
+  const playerTotalEl = document.getElementById("playerTotal");
+  const bankerTotalEl = document.getElementById("bankerTotal");
+  const msgAreaEl   = document.getElementById("msgArea");
+
+  let bankroll = 1000;
+  let shoe = [];
+  let dealing = false;
+
+  function shuffle(a){
+    for(let i=a.length-1;i>0;i--){
+      const j=(Math.random()*(i+1))|0;
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+  }
+
+  function freshShoe(){
+    shoe=[];
+    for(let d=0;d<8;d++)
+      for(const s of SUITS)
+        for(const r of RANKS)
+          shoe.push({rank:r,suit:s});
+    shuffle(shoe);
+  }
+
+  function draw(){
+    if(shoe.length<20) freshShoe();
+    return shoe.pop();
+  }
+
+  function isRed(s){ return s==="♥"||s==="♦"; }
+  function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+  function cardVal(rank){
+    if(rank==="A") return 1;
+    if(["10","J","Q","K"].includes(rank)) return 0;
+    return parseInt(rank,10);
+  }
+  function handTotal(cards){ return cards.reduce((t,c)=>t+cardVal(c.rank),0)%10; }
+
+  async function addCard(container, card){
+    const el=document.createElement("div");
+    el.className="card"+(isRed(card.suit)?" red":"")+" deal-in";
+    el.textContent=card.rank+card.suit;
+    container.appendChild(el);
+    await sleep(230);
+    el.classList.remove("deal-in");
+  }
+
+  function setMsg(text,type){
+    msgAreaEl.innerHTML=`<span class="msg${type?" "+type:""}">${text}</span>`;
+  }
+
+  function getSide(){
+    return document.querySelector("input[name='side']:checked").value;
+  }
+
+  // ── Baccarat third-card rules ──────────────────────────────
+  function playerDraws(pTot){ return pTot<=5; }
+
+  function bankerDraws(bTot, p3rank){
+    // p3rank is the rank string of player's 3rd card, or null
+    if(p3rank===null) return bTot<=5;
+    if(bTot<=2) return true;
+    if(bTot===3) return p3rank!=="8";
+    if(bTot===4) return ["2","3","4","5","6","7"].includes(p3rank);
+    if(bTot===5) return ["4","5","6","7"].includes(p3rank);
+    if(bTot===6) return ["6","7"].includes(p3rank);
+    return false; // bTot 7: never draws
+  }
+  // ──────────────────────────────────────────────────────────
+
+  async function onDeal(){
+    if(dealing) return;
+
+    const bet=Math.max(1,Math.floor(Number(betEl.value)||50));
+    betEl.value=bet;
+    betDispEl.textContent=bet;
+
+    if(bet>bankroll){ setMsg("Bet exceeds bankroll.","lose"); return; }
+
+    dealing=true;
+    dealBtn.disabled=true;
+    bankroll-=bet;
+    bankEl.textContent=bankroll;
+
+    playerCardsEl.innerHTML="";
+    bankerCardsEl.innerHTML="";
+    playerTotalEl.textContent="";
+    bankerTotalEl.textContent="";
+    msgAreaEl.innerHTML="";
+
+    const side=getSide();
+    const pc=[draw(),draw()];
+    const bc=[draw(),draw()];
+
+    // Deal alternating P-B-P-B
+    await addCard(playerCardsEl,pc[0]);
+    await addCard(bankerCardsEl,bc[0]);
+    await addCard(playerCardsEl,pc[1]);
+    await addCard(bankerCardsEl,bc[1]);
+
+    let pTot=handTotal(pc);
+    let bTot=handTotal(bc);
+    playerTotalEl.textContent=pTot;
+    bankerTotalEl.textContent=bTot;
+    await sleep(180);
+
+    // Natural (8 or 9) — no more cards
+    if(pTot>=8||bTot>=8){
+      settle(bet,side,pTot,bTot,true);
+      return;
+    }
+
+    // Player third card
+    let p3rank=null;
+    if(playerDraws(pTot)){
+      const c=draw();
+      p3rank=c.rank;
+      pc.push(c);
+      await addCard(playerCardsEl,c);
+      pTot=handTotal(pc);
+      playerTotalEl.textContent=pTot;
+      await sleep(150);
+    }
+
+    // Banker third card
+    if(bankerDraws(bTot,p3rank)){
+      const c=draw();
+      bc.push(c);
+      await addCard(bankerCardsEl,c);
+      bTot=handTotal(bc);
+      bankerTotalEl.textContent=bTot;
+      await sleep(150);
+    }
+
+    settle(bet,side,pTot,bTot,false);
+  }
+
+  function settle(bet,side,p,b,natural){
+    const winner=p>b?"player":b>p?"banker":"tie";
+    const prefix=natural?"Natural! ":"";
+
+    if(side===winner){
+      if(winner==="player"){
+        bankroll+=bet*2;
+        setMsg(`${prefix}Player wins! +$${bet}`,"win");
+      }else if(winner==="banker"){
+        const pay=Math.floor(bet*0.95);
+        bankroll+=bet+pay;
+        setMsg(`${prefix}Banker wins! +$${pay} (5% comm.)`,"win");
+      }else{
+        bankroll+=bet*9;
+        setMsg(`${prefix}Tie! +$${bet*8}`,"win");
+      }
+    }else{
+      const w=winner.charAt(0).toUpperCase()+winner.slice(1);
+      setMsg(`${prefix}${w} wins. You lose $${bet}.`,"lose");
+    }
+
+    bankEl.textContent=bankroll;
+    dealing=false;
+    dealBtn.disabled=false;
+  }
+
+  dealBtn.onclick=onDeal;
+  betEl.onchange=()=>{
+    const v=Math.max(1,Math.floor(Number(betEl.value)||50));
+    betEl.value=v;
+    betDispEl.textContent=v;
+  };
+
+  freshShoe();
+})();
+</script>
 </body>
 </html>

@@ -589,6 +589,11 @@
         updateTotals(false);
         updateButtons();
       }else{
+        // All hands busted — reveal dealer hole before settling
+        holeDown = false;
+        renderDealer(true);
+        updateTotals(true);
+        await sleep(300);
         inRound = false;
         updateButtons();
         await finishRound(false);
@@ -752,7 +757,7 @@
   }
 
   async function finishRound(dealerPlayed){
-    const dTot = dealerPlayed ? totalHand(dealer) : totalHand(dealer);
+    const dTot = totalHand(dealer);
     // settle payouts
     for(const h of hands){
       if(h.surrendered) continue;
