@@ -620,8 +620,15 @@
 
     const live = anyPlayableHands();
     if(live){
+      hitBtn.disabled = true;
+      standBtn.disabled = true;
+      doubleBtn.disabled = true;
+      splitBtn.disabled = true;
+      surrenderBtn.disabled = true;
       await dealerPlay();
       await finishRound(true);
+      inRound = false;
+      updateButtons();
     }else{
       inRound = false;
       updateButtons();
@@ -669,8 +676,15 @@
       }else{
         const live = anyPlayableHands();
         if(live){
+          hitBtn.disabled = true;
+          standBtn.disabled = true;
+          doubleBtn.disabled = true;
+          splitBtn.disabled = true;
+          surrenderBtn.disabled = true;
           await dealerPlay();
           await finishRound(true);
+          inRound = false;
+          updateButtons();
         }else{
           inRound = false;
           updateButtons();
